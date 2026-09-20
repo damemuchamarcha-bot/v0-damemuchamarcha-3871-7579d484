@@ -35,6 +35,21 @@ export type ArticleBlock =
   | BlockSpotify
   | BlockSocial
 
+export type CategorySlug =
+  | 'noticias'
+  | 'entrevistas'
+  | 'criticas'
+  | 'conciertos'
+  | 'estrenos'
+
+export const CATEGORY_LABELS: Record<CategorySlug, string> = {
+  noticias: 'Noticias',
+  entrevistas: 'Entrevistas',
+  criticas: 'Críticas',
+  conciertos: 'Conciertos',
+  estrenos: 'Estrenos',
+}
+
 export interface Article {
   slug: string
   title: string
@@ -44,8 +59,12 @@ export interface Article {
   readingTime: string
   section: 'musica' | 'cine'
   categoryLabel: string
+  categorySlug?: CategorySlug
+  featured?: boolean
   image: string
   body: ArticleBlock[]
+  spotify?: string
+  youtube?: string
   gallery?: string[]
 }
 
@@ -59,29 +78,27 @@ export const articles: Article[] = [
     readingTime: '3 min lectura',
     section: 'musica',
     categoryLabel: 'Noticias',
+    categorySlug: 'noticias',
+    featured: true,
     image: '/placeholder.svg',
     body: [
       '¡Bienvenidos al nuevo portal! Este es el primer párrafo de texto y arrancará con una letra capitular grande en rosa punk.',
-      
       'Aquí puedes escribir un segundo párrafo explicando más detalles sobre la noticia o la reseña.',
-
       {
         type: 'image',
         src: '/placeholder.svg',
         alt: 'Imagen de prueba',
-        caption: 'Pie de foto de ejemplo para tus imágenes'
+        caption: 'Pie de foto de ejemplo para tus imágenes',
       },
-
       'Este párrafo va justo debajo de la primera imagen intercalada.',
-
       {
         type: 'social',
         platform: 'instagram',
         url: 'https://instagram.com',
-        label: 'Síguenos en Instagram'
-      }
-    ]
-  }
+        label: 'Síguenos en Instagram',
+      },
+    ],
+  },
 ]
 
 export function getArticle(slug: string) {
@@ -90,4 +107,16 @@ export function getArticle(slug: string) {
 
 export function getRecent(currentSlug?: string) {
   return articles.filter((a) => a.slug !== currentSlug)
+}
+
+export function getFeatured() {
+  return articles.find((a) => a.featured) || articles[0]
+}
+
+export function getBySection(section: 'musica' | 'cine') {
+  return articles.filter((a) => a.section === section)
+}
+
+export function getByCategory(categorySlug: string) {
+  return articles.filter((a) => a.categorySlug === categorySlug || a.categoryLabel.toLowerCase() === categorySlug.toLowerCase())
 }
