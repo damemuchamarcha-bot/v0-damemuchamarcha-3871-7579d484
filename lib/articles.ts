@@ -90,7 +90,7 @@ export const articles: Article[] = [
         caption: 'Portada del álbum de A.A.F.B-Sides',
       },
       
-'Este EP está conformado por 8 canciones de la cara B del álbum de 2025'.
+'Este EP está conformado por 8 canciones de la cara B del álbum de 2025.',
 
 'Sweet Fuego' 
 'The Fingerprints'
