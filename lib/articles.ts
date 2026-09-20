@@ -85,11 +85,22 @@ export const articles: Article[] = [
       'El rapero estadounidense Duckwrth lanzó su nuevo disco A.A.F.B - Sides tras su último álbum en 2025, All American F*ckBoy que trajo algunas colaboraciones como con la del rapero IDK.',
       {
         type: 'image',
-        src: '/',
-        alt: 'Imagen de prueba',
+        src: '/public/images/cf5bf9aae8a04609f5a98a7bdf7bafed.1000x1000x1.png',
+        alt: 'Portada del álbum de A.A.F.B-Sides',
         caption: 'Portada del álbum de A.A.F.B-Sides',
       },
-      'Este párrafo va justo debajo de la primera imagen intercalada.',
+      '
+Este EP está conformado por 8 canciones de la cara B del álbum de 2025.
+
+Sweet Fuego 
+The Fingerprints
+I Wanna Be Your Dog Again
+4 Wheel Truck
+Draculove
+21st Century Freak
+Wishing Well
+Heart Break Jam
+',
       {
         type: 'social',
         platform: 'instagram',
