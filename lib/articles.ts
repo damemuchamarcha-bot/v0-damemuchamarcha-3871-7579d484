@@ -78,7 +78,7 @@ export const articles: Article[] = [
     readingTime: '3 min lectura',
     section: 'musica',
     categoryLabel: 'Noticias','Análisis de álbum'
-    categorySlug: 'noticias','Análisis de álbum'
+    categorySlug: 'noticias',
     featured: true,
     image: '/placeholder.svg',
     body: [
