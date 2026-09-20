@@ -77,7 +77,7 @@ export const articles: Article[] = [
     date: '22 SEP 2026',
     readingTime: '3 min lectura',
     section: 'musica',
-    categoryLabel: 'Noticias','Análisis de álbum',
+    categoryLabel: 'Noticias',
     categorySlug: 'noticias',
     featured: true,
     image: '/placeholder.svg',
