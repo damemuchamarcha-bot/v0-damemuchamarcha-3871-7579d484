@@ -92,15 +92,14 @@ export const articles: Article[] = [
       
 'Este EP está conformado por 8 canciones de la cara B del álbum de 2025'.
 
-Sweet Fuego 
+'Sweet Fuego 
 The Fingerprints
 I Wanna Be Your Dog Again
 4 Wheel Truck
 Draculove
 21st Century Freak
 Wishing Well
-Heart Break Jam
-',
+Heart Break Jam',
       {
         type: 'social',
         platform: 'instagram',
