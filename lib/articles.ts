@@ -71,24 +71,23 @@ export interface Article {
 export const articles: Article[] = [
   {
     slug: 'mi-primer-articulo',
-    title: '¡BIENVENIDOS A DAME MARCHA!',
-    excerpt: 'Primer artículo de prueba con texto, imágenes intercaladas y redes sociales.',
-    author: 'Dame Marcha',
-    date: '20 SEP 2026',
+    title: 'Esto es lo nuevo de Duckwrth A.A.F-B Sides',
+    excerpt: 'El nuevo álbum del artista estadounidense',
+    author: 'Marta Menjíbar',
+    date: '22 SEP 2026',
     readingTime: '3 min lectura',
     section: 'musica',
-    categoryLabel: 'Noticias',
-    categorySlug: 'noticias',
+    categoryLabel: 'Noticias','Análisis de álbum'
+    categorySlug: 'noticias','Análisis de álbum'
     featured: true,
     image: '/placeholder.svg',
     body: [
-      '¡Bienvenidos al nuevo portal! Este es el primer párrafo de texto y arrancará con una letra capitular grande en rosa punk.',
-      'Aquí puedes escribir un segundo párrafo explicando más detalles sobre la noticia o la reseña.',
+      'El rapero estadounidense Duckwrth lanzó su nuevo disco A.A.F.B - Sides tras su último álbum en 2025, All American F*ckBoy que trajo algunas colaboraciones como con la del rapero IDK.',
       {
         type: 'image',
-        src: '/placeholder.svg',
+        src: '/',
         alt: 'Imagen de prueba',
-        caption: 'Pie de foto de ejemplo para tus imágenes',
+        caption: 'Portada del álbum de A.A.F.B-Sides',
       },
       'Este párrafo va justo debajo de la primera imagen intercalada.',
       {
