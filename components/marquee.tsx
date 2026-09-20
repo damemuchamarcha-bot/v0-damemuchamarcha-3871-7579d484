@@ -1,9 +1,9 @@
 const ITEMS = [
   'Cine sin filtros',
   'Música a todo volumen',
-  'Crítica con criterio',
+  'Dame crítica',
   'Directos incendiarios',
-  'Cultura de barrio',
+  'Artistas emergentes',
   'Estrenos de la temporada',
 ]
 
