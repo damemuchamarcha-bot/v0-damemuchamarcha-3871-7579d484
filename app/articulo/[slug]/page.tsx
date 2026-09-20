@@ -2,8 +2,8 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
-import { ArrowLeft, Clock, Calendar, ExternalLink } from 'lucide-react'
-import { articles, getArticle, getRecent, ArticleBlock } from '@/lib/articles'
+import { ArrowLeft, Clock, Calendar } from 'lucide-react'
+import { articles, getArticle, getRecent } from '@/lib/articles'
 import { CategoryTag } from '@/components/category-tag'
 import { ArticleCard } from '@/components/article-card'
 
@@ -38,7 +38,7 @@ export default async function ArticlePage({
 
   return (
     <article>
-      {/* Imagen de portada superior */}
+      {/* Header image */}
       <div className="relative aspect-[16/10] w-full sm:aspect-[21/9]">
         <Image
           src={article.image || '/placeholder.svg'}
@@ -86,110 +86,58 @@ export default async function ArticlePage({
           </span>
         </div>
 
-        {/* Cuerpo del artículo basado en bloques */}
+        {/* Body */}
         <div className="mt-10 flex flex-col gap-6">
-          {article.body.map((block: ArticleBlock, i: number) => {
-            // Párrafo de texto simple
-            if (typeof block === 'string') {
-              return (
-                <p
-                  key={i}
-                  className="text-pretty text-lg leading-[1.8] text-punk-cream/85 first-letter:float-left first-letter:mr-3 first-letter:font-display first-letter:text-6xl first-letter:leading-[0.8] first-letter:text-punk-pink [&:not(:first-child)]:first-letter:float-none [&:not(:first-child)]:first-letter:mr-0 [&:not(:first-child)]:first-letter:text-lg [&:not(:first-child)]:first-letter:text-punk-cream/85"
-                >
-                  {block}
-                </p>
-              )
-            }
-
-            // Bloque explícito de texto
-            if (block.type === 'text') {
-              return (
-                <p key={i} className="text-pretty text-lg leading-[1.8] text-punk-cream/85">
-                  {block.content}
-                </p>
-              )
-            }
-
-            // Imagen intercalada con marco punk
-            if (block.type === 'image') {
-              return (
-                <figure key={i} className="my-4">
-                  <div className="relative aspect-[16/9] w-full overflow-hidden border-2 border-punk-pink">
-                    <Image
-                      src={block.src}
-                      alt={block.alt || article.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  {block.caption && (
-                    <figcaption className="mt-2 text-center text-xs uppercase tracking-wider text-punk-cream/60">
-                      {block.caption}
-                    </figcaption>
-                  )}
-                </figure>
-              )
-            }
-
-            // Reproductor de Spotify
-            if (block.type === 'spotify') {
-              return (
-                <div key={i} className="my-6">
-                  <div className="border-2 border-punk-pink">
-                    <iframe
-                      title="Spotify"
-                      src={block.url}
-                      width="100%"
-                      height="152"
-                      loading="lazy"
-                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                      className="block"
-                    />
-                  </div>
-                </div>
-              )
-            }
-
-            // Vídeo de YouTube
-            if (block.type === 'youtube') {
-              return (
-                <div key={i} className="my-6">
-                  <div className="relative aspect-video border-2 border-punk-yellow">
-                    <iframe
-                      title="YouTube"
-                      src={block.url}
-                      loading="lazy"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      className="absolute inset-0 size-full"
-                    />
-                  </div>
-                </div>
-              )
-            }
-
-            // Enlace a redes sociales
-            if (block.type === 'social') {
-              return (
-                <div key={i} className="my-4">
-                  <a
-                    href={block.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 border-2 border-punk-yellow bg-punk-black px-4 py-3 font-display text-sm uppercase tracking-wider text-punk-yellow transition-all hover:bg-punk-yellow hover:text-punk-black"
-                  >
-                    <span>{block.label || `Ver en ${block.platform}`}</span>
-                    <ExternalLink className="size-4" />
-                  </a>
-                </div>
-              )
-            }
-
-            return null
-          })}
+          {article.body.map((para, i) => (
+            <p
+              key={i}
+              className="text-pretty text-lg leading-[1.8] text-punk-cream/85 first-letter:float-left first-letter:mr-3 first-letter:font-display first-letter:text-6xl first-letter:leading-[0.8] first-letter:text-punk-pink [&:not(:first-child)]:first-letter:float-none [&:not(:first-child)]:first-letter:mr-0 [&:not(:first-child)]:first-letter:text-lg [&:not(:first-child)]:first-letter:text-punk-cream/85"
+            >
+              {para}
+            </p>
+          ))}
         </div>
 
-        {/* Galería opcional al final */}
+        {/* Spotify embed */}
+        {article.spotify && (
+          <div className="mt-12">
+            <h2 className="mb-4 font-display text-2xl uppercase tracking-tight text-punk-cream">
+              La banda sonora <span className="text-punk-yellow">/</span> Spotify
+            </h2>
+            <div className="border-2 border-punk-pink">
+              <iframe
+                title="Reproductor de Spotify"
+                src={article.spotify}
+                width="100%"
+                height="352"
+                loading="lazy"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                className="block"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* YouTube embed */}
+        {article.youtube && (
+          <div className="mt-12">
+            <h2 className="mb-4 font-display text-2xl uppercase tracking-tight text-punk-cream">
+              En movimiento <span className="text-punk-pink">/</span> Vídeo
+            </h2>
+            <div className="relative aspect-video border-2 border-punk-yellow">
+              <iframe
+                title="Reproductor de YouTube"
+                src={article.youtube}
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="absolute inset-0 size-full"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Gallery */}
         {article.gallery && article.gallery.length > 0 && (
           <div className="mt-12 mb-4">
             <h2 className="mb-4 font-display text-2xl uppercase tracking-tight text-punk-cream">
@@ -215,21 +163,20 @@ export default async function ArticlePage({
         )}
       </div>
 
-      {/* Artículos relacionados */}
-      {related.length > 0 && (
-        <section className="mx-auto mt-16 max-w-7xl px-4 py-14 sm:px-6">
-          <div className="mb-8 border-b-2 border-punk-pink pb-4">
-            <h2 className="font-display text-3xl uppercase leading-none tracking-tight text-punk-cream sm:text-4xl">
-              Sigue la <span className="text-punk-pink">marcha</span>
-            </h2>
-          </div>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {related.map((a) => (
-              <ArticleCard key={a.slug} article={a} />
-            ))}
-          </div>
-        </section>
-      )}
+      {/* Related */}
+      <section className="mx-auto mt-16 max-w-7xl px-4 py-14 sm:px-6">
+        <div className="mb-8 border-b-2 border-punk-pink pb-4">
+          <h2 className="font-display text-3xl uppercase leading-none tracking-tight text-punk-cream sm:text-4xl">
+            Sigue la <span className="text-punk-pink">marcha</span>
+          </h2>
+        </div>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {related.map((a) => (
+            <ArticleCard key={a.slug} article={a} />
+          ))}
+        </div>
+      </section>
     </article>
   )
 }
+
