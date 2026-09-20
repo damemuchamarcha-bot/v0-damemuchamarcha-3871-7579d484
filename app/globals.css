@@ -1,0 +1,160 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-display: var(--font-anton);
+  --font-sans: var(--font-inter);
+
+  --color-punk-pink: var(--punk-pink);
+  --color-punk-yellow: var(--punk-yellow);
+  --color-punk-black: var(--punk-black);
+  --color-punk-charcoal: var(--punk-charcoal);
+  --color-punk-cream: var(--punk-cream);
+  --color-punk-steel: var(--punk-steel);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+}
+
+:root {
+  color-scheme: dark;
+
+  /* High-impact Y2K accents */
+  --punk-pink: oklch(0.64 0.27 0.5);
+  --punk-yellow: oklch(0.9 0.19 100);
+  /* Warm, early-2000s undertones instead of cold black */
+  --punk-black: oklch(0.15 0.012 60);
+  --punk-charcoal: oklch(0.23 0.016 58);
+  --punk-cream: oklch(0.96 0.022 85);
+  --punk-steel: oklch(0.7 0.02 240);
+
+  --background: oklch(0.17 0.014 60);
+  --foreground: oklch(0.96 0.022 85);
+  --card: oklch(0.22 0.016 58);
+  --card-foreground: oklch(0.96 0.022 85);
+  --popover: oklch(0.16 0.014 60);
+  --popover-foreground: oklch(0.96 0.022 85);
+  --primary: oklch(0.64 0.27 0.5);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.28 0.016 58);
+  --secondary-foreground: oklch(0.96 0.022 85);
+  --muted: oklch(0.28 0.016 58);
+  --muted-foreground: oklch(0.72 0.015 70);
+  --accent: oklch(0.9 0.19 100);
+  --accent-foreground: oklch(0.15 0.012 60);
+  --destructive: oklch(0.63 0.25 27);
+  --border: oklch(0.36 0.02 62);
+  --input: oklch(0.36 0.02 62);
+  --ring: oklch(0.64 0.27 0.5);
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    background-image:
+      radial-gradient(120% 80% at 50% -10%, oklch(0.26 0.03 55 / 0.6), transparent 60%),
+      radial-gradient(80% 60% at 100% 100%, oklch(0.22 0.05 350 / 0.25), transparent 55%);
+    background-attachment: fixed;
+  }
+}
+
+/* -------- Y2K / PS2-ad era utilities -------- */
+
+/* Glossy top-light sheen, like a PS2 game cover */
+@utility y2k-gloss {
+  background-image: linear-gradient(
+    180deg,
+    oklch(1 0 0 / 0.16) 0%,
+    oklch(1 0 0 / 0.04) 22%,
+    oklch(0 0 0 / 0) 48%,
+    oklch(0 0 0 / 0.22) 100%
+  );
+}
+
+/* Brushed-chrome metallic frame */
+@utility chrome-frame {
+  border-width: 2px;
+  border-style: solid;
+  border-image: linear-gradient(
+      160deg,
+      oklch(0.95 0.01 240) 0%,
+      oklch(0.55 0.02 240) 30%,
+      oklch(0.85 0.01 240) 52%,
+      oklch(0.45 0.02 240) 74%,
+      oklch(0.9 0.01 240) 100%
+    )
+    1;
+}
+
+/* Chrome / liquid-metal text fill */
+@utility text-chrome {
+  background-image: linear-gradient(
+    180deg,
+    oklch(0.98 0.005 240) 0%,
+    oklch(0.78 0.02 240) 45%,
+    oklch(0.55 0.03 250) 55%,
+    oklch(0.88 0.01 240) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Neon glows */
+@utility glow-pink {
+  box-shadow:
+    0 0 0 1px oklch(0.64 0.27 0.5 / 0.4),
+    0 0 24px oklch(0.64 0.27 0.5 / 0.45);
+}
+
+@utility glow-yellow {
+  box-shadow:
+    0 0 0 1px oklch(0.9 0.19 100 / 0.4),
+    0 0 24px oklch(0.9 0.19 100 / 0.4);
+}
+
+/* CRT scanline overlay */
+@utility scanlines {
+  background-image: repeating-linear-gradient(
+    0deg,
+    oklch(0 0 0 / 0.16) 0px,
+    oklch(0 0 0 / 0.16) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+@utility text-stroke-pink {
+  -webkit-text-stroke: 2px var(--punk-pink);
+}
+
+@utility text-stroke-yellow {
+  -webkit-text-stroke: 2px var(--punk-yellow);
+}
