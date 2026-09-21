@@ -152,25 +152,26 @@ export function getAllArticles(): Article[] {
 }
 
 // Reemplazamos la lista estática por la llamada dinámica
+// Reemplazamos la lista estática por la llamada dinámica
 export const articles: Article[] = getAllArticles()
 
 export function getArticle(slug: string) {
-  return articles.find((a) => a.slug === slug)
+  return articles.find((a) => a && a.slug === slug)
 }
 
 export function getFeatured() {
-  return articles.find((a) => a.featured) ?? articles[0]
+  const validArticles = articles.filter((a) => a && a.slug)
+  return validArticles.find((a) => a.featured) ?? validArticles[0]
 }
 
 export function getBySection(section: Section) {
-  return articles.filter((a) => a.section === section)
+  return articles.filter((a) => a && a.section === section)
 }
 
 export function getByCategory(category: CategorySlug) {
-  return articles.filter((a) => a.category === category)
+  return articles.filter((a) => a && a.category === category)
 }
 
 export function getRecent(excludeSlug?: string) {
-  return articles.filter((a) => a.slug !== excludeSlug)
+  return articles.filter((a) => a && a.slug && a.slug !== excludeSlug)
 }
- 
