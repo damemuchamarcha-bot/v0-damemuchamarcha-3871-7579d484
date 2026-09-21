@@ -19,7 +19,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params
   const article = getArticle(slug)
-  if (!article) return { title: 'Artículo no encontrado' }
+  if (!article) return { title: 'Artículo no encontrado — Dame Marcha' }
   return {
     title: `${article.title} — Dame Marcha`,
     description: article.excerpt,
@@ -39,7 +39,7 @@ export default async function ArticlePage({
 
   return (
     <article>
-      {/* Header image con la estética original */}
+      {/* Header image automática */}
       <div className="relative aspect-[16/10] w-full sm:aspect-[21/9]">
         <Image
           src={article.image || '/placeholder.svg'}
@@ -57,7 +57,7 @@ export default async function ArticlePage({
           href={`/${article.section}`}
           className="mb-6 inline-flex items-center gap-2 font-display text-sm uppercase tracking-wide text-punk-yellow drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)] transition-colors hover:text-punk-pink"
         >
-          <ArrowLeft className="size-4" />
+          <ArrowLeft className="size-4" aria-hidden="true" />
           Volver a {article.section === 'cine' ? 'Cine' : 'Música'}
         </Link>
 
@@ -78,16 +78,16 @@ export default async function ArticlePage({
             Por {article.author}
           </span>
           <span className="flex items-center gap-1.5">
-            <Calendar className="size-4" />
+            <Calendar className="size-4" aria-hidden="true" />
             {article.date}
           </span>
           <span className="flex items-center gap-1.5">
-            <Clock className="size-4" />
+            <Clock className="size-4" aria-hidden="true" />
             {article.readingTime}
           </span>
         </div>
 
-        {/* Cuerpo del artículo respetando la estructura original */}
+        {/* Cuerpo del artículo con Markdown */}
         <div className="mt-10 flex flex-col gap-6">
           {article.body.map((para, i) => (
             <div
@@ -111,26 +111,27 @@ export default async function ArticlePage({
           ))}
         </div>
 
-        {/* Spotify si existe */}
+        {/* Spotify automático */}
         {article.spotify && (
           <div className="mt-12">
             <h2 className="mb-4 font-display text-2xl uppercase tracking-tight text-punk-cream">
-              Banda sonora <span className="text-punk-yellow">/</span> Spotify
+              La banda sonora <span className="text-punk-yellow">/</span> Spotify
             </h2>
             <div className="border-2 border-punk-pink overflow-hidden">
               <iframe
+                title="Reproductor de Spotify"
                 src={article.spotify}
                 width="100%"
                 height="352"
-                frameBorder="0"
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                 loading="lazy"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                className="block"
               />
             </div>
           </div>
         )}
 
-        {/* YouTube si existe */}
+        {/* YouTube automático */}
         {article.youtube && (
           <div className="mt-12">
             <h2 className="mb-4 font-display text-2xl uppercase tracking-tight text-punk-cream">
@@ -138,8 +139,9 @@ export default async function ArticlePage({
             </h2>
             <div className="relative aspect-video border-2 border-punk-yellow overflow-hidden">
               <iframe
+                title="Reproductor de YouTube"
                 src={article.youtube}
-                title="YouTube video player"
+                loading="lazy"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 className="absolute inset-0 size-full"
@@ -148,7 +150,7 @@ export default async function ArticlePage({
           </div>
         )}
 
-        {/* Galería si existe */}
+        {/* Galería automática */}
         {article.gallery && article.gallery.length > 0 && (
           <div className="mt-12 mb-4">
             <h2 className="mb-4 font-display text-2xl uppercase tracking-tight text-punk-cream">
@@ -164,6 +166,7 @@ export default async function ArticlePage({
                     src={src}
                     alt={`${article.title} — imagen ${i + 1}`}
                     fill
+                    sizes="(max-width: 640px) 100vw, 50vw"
                     className="object-cover transition-transform duration-500 hover:scale-105"
                   />
                 </div>
@@ -173,7 +176,7 @@ export default async function ArticlePage({
         )}
       </div>
 
-      {/* Artículos relacionados */}
+      {/* Related */}
       <section className="mx-auto mt-16 max-w-7xl px-4 py-14 sm:px-6">
         <div className="mb-8 border-b-2 border-punk-pink pb-4">
           <h2 className="font-display text-3xl uppercase leading-none tracking-tight text-punk-cream sm:text-4xl">
