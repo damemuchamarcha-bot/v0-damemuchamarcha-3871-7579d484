@@ -4,101 +4,25 @@ import matter from 'gray-matter'
 
 const articlesDirectory = path.join(process.cwd(), 'content/articles')
 
-export type Section = 'cine' | 'musica'
-
-export type CategorySlug =
-  | 'proximos-estrenos'
-  | 'analisis-de-cine'
-  | 'critica-de-cine'
-  | 'analisis-de-albumes'
-  | 'directos'
-
-export type Article = {
+export interface Article {
   slug: string
   title: string
   excerpt: string
-  section: Section
-  category: CategorySlug
+  section: string
+  category: string
   categoryLabel: string
   author: string
   date: string
   timeAgo: string
   readingTime: string
   image: string
-  featured?: boolean
+  featured: boolean
   spotify?: string
   youtube?: string
   gallery?: string[]
   body: string[]
-  pullQuote?: string
-  pullQuoteCite?: string
-  inlineImage?: string
-  inlineImageCaption?: string
 }
 
-/* WordPress-style linear content blocks for the reader view */
-export type ContentBlock =
-  | { type: 'paragraph'; text: string; lead?: boolean }
-  | { type: 'image'; src: string; caption?: string }
-  | { type: 'quote'; text: string; cite?: string }
-  | { type: 'youtube'; url: string }
-  | { type: 'spotify'; url: string }
-
-/**
- * Composes the sequential block stream the reader renders:
- * intro → image (+caption) → body → pull-quote → body → youtube → spotify → outro.
- * Falls back gracefully when an article lacks a given media field.
- */
-export function getArticleBlocks(article: Article): ContentBlock[] {
-  const [p1, p2, p3, p4] = article.body
-  const blocks: ContentBlock[] = []
-
-  if (p1) blocks.push({ type: 'paragraph', text: p1, lead: true })
-
-  const inline = article.inlineImage ?? article.gallery?.[0]
-  if (inline) {
-    blocks.push({
-      type: 'image',
-      src: inline,
-      caption: article.inlineImageCaption ?? article.title,
-    })
-  }
-
-  if (p2) blocks.push({ type: 'paragraph', text: p2 })
-
-  if (article.pullQuote) {
-    blocks.push({
-      type: 'quote',
-      text: article.pullQuote,
-      cite: article.pullQuoteCite ?? article.author,
-    })
-  }
-
-  if (p3) blocks.push({ type: 'paragraph', text: p3 })
-
-  if (article.youtube) blocks.push({ type: 'youtube', url: article.youtube })
-  if (article.spotify) blocks.push({ type: 'spotify', url: article.spotify })
-
-  if (p4) blocks.push({ type: 'paragraph', text: p4 })
-
-  return blocks
-}
-
-export const CATEGORY_LABELS: Record<CategorySlug, string> = {
-  'proximos-estrenos': 'Próximos Estrenos',
-  'analisis-de-cine': 'Análisis de Cine',
-  'critica-de-cine': 'Crítica de Cine',
-  'analisis-de-albumes': 'Análisis de Álbumes',
-  directos: 'Directos',
-}
-
-export const SECTION_CATEGORIES: Record<Section, CategorySlug[]> = {
-  cine: ['proximos-estrenos', 'analisis-de-cine', 'critica-de-cine'],
-  musica: ['analisis-de-albumes', 'directos'],
-}
-
-// Función para obtener todos los artículos dinámicamente desde content/articles
-// Función para obtener todos los artículos dinámicamente desde content/articles de forma segura
 export function getAllArticles(): Article[] {
   if (!fs.existsSync(articlesDirectory)) {
     return []
@@ -113,15 +37,41 @@ export function getAllArticles(): Article[] {
       const fileContents = fs.readFileSync(fullPath, 'utf8')
       const matterResult = matter(fileContents)
 
-      // Si el archivo no tiene título o slug, lo ignoramos para que no rompa la web
       if (!matterResult.data.title) {
         return null
       }
 
+      // 1. Automatizar imagen de portada (acepta image, thumbnail, portada, etc. y pone la barra /)
+      let rawImage = matterResult.data.image || matterResult.data.thumbnail || matterResult.data.portada || '/placeholder.svg'
+      if (rawImage && !rawImage.startsWith('http') && !rawImage.startsWith('/')) {
+        rawImage = `/${rawImage}`
+      }
+
+      // 2. Automatizar YouTube (si pegan el enlace normal o embed, lo convierte y limpia automáticamente)
+      let rawYoutube = matterResult.data.youtube || matterResult.data.video || ''
+      if (rawYoutube) {
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
+        const match = rawYoutube.match(regExp)
+        if (match && match[2].length === 11) {
+          rawYoutube = `https://www.youtube.com/embed/${match[2]}`
+        }
+      }
+
+      // 3. Automatizar Spotify (si falta /embed/, lo añade solo)
+      let rawSpotify = matterResult.data.spotify || matterResult.data.audio || ''
+      if (rawSpotify && !rawSpotify.includes('/embed/')) {
+        rawSpotify = rawSpotify.replace('open.spotify.com/', 'open.spotify.com/embed/')
+      }
+
+      // 4. Automatizar Galería de imágenes
+      const rawGallery = matterResult.data.gallery || matterResult.data.images || []
+      const formattedGallery = Array.isArray(rawGallery) 
+        ? rawGallery.map((img: string) => (img.startsWith('http') || img.startsWith('/') ? img : `/${img}`))
+        : []
+
       const rawBody = matterResult.content
-        .split('\n\n')
-        .map((p) => p.trim())
-        .filter(Boolean)
+        ? matterResult.content.split('\n\n').map((p) => p.trim()).filter(Boolean)
+        : ['Contenido próximamente...']
 
       return {
         slug,
@@ -131,19 +81,17 @@ export function getAllArticles(): Article[] {
         category: matterResult.data.category || 'analisis-de-albumes',
         categoryLabel: matterResult.data.categoryLabel || 'Análisis de Álbumes',
         author: matterResult.data.author || 'Redacción',
-        date: matterResult.data.date ? new Date(matterResult.data.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase() : '18 SEP 2026',
+        date: matterResult.data.date
+          ? new Date(matterResult.data.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()
+          : '21 SEPT 2026',
         timeAgo: matterResult.data.timeAgo || 'Reciente',
         readingTime: matterResult.data.readingTime || '5 min de lectura',
-        image: matterResult.data.image || '/images/musica-album.png',
+        image: rawImage,
         featured: matterResult.data.featured || false,
-        spotify: matterResult.data.spotify,
-        youtube: matterResult.data.youtube,
-        gallery: matterResult.data.gallery,
-        body: rawBody.length > 0 ? rawBody : ['Contenido próximamente...'],
-        pullQuote: matterResult.data.pullQuote,
-        pullQuoteCite: matterResult.data.pullQuoteCite,
-        inlineImage: matterResult.data.inlineImage,
-        inlineImageCaption: matterResult.data.inlineImageCaption,
+        spotify: rawSpotify,
+        youtube: rawYoutube,
+        gallery: formattedGallery,
+        body: rawBody,
       } as Article
     })
     .filter((article): article is Article => article !== null)
@@ -151,27 +99,12 @@ export function getAllArticles(): Article[] {
   return allArticlesData
 }
 
-// Reemplazamos la lista estática por la llamada dinámica
-// Reemplazamos la lista estática por la llamada dinámica
-export const articles: Article[] = getAllArticles()
+export const articles = getAllArticles()
 
-export function getArticle(slug: string) {
-  return articles.find((a) => a && a.slug === slug)
+export function getArticle(slug: string): Article | undefined {
+  return articles.find((article) => article.slug === slug)
 }
 
-export function getFeatured() {
-  const validArticles = articles.filter((a) => a && a.slug)
-  return validArticles.find((a) => a.featured) ?? validArticles[0]
-}
-
-export function getBySection(section: Section) {
-  return articles.filter((a) => a && a.section === section)
-}
-
-export function getByCategory(category: CategorySlug) {
-  return articles.filter((a) => a && a.category === category)
-}
-
-export function getRecent(excludeSlug?: string) {
-  return articles.filter((a) => a && a.slug && a.slug !== excludeSlug)
+export function getRecent(currentSlug: string): Article[] {
+  return articles.filter((article) => article.slug !== currentSlug)
 }
