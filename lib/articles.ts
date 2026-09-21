@@ -146,12 +146,8 @@ export function getAllArticles(): Article[] {
         inlineImageCaption: matterResult.data.inlineImageCaption,
       } as Article
     })
-    .filter((article): article is Article => article !== null) // Filtramos los nulos de forma segura
+    .filter((article): article is Article => article !== null)
 
-  return allArticlesData
-}
-
-  // Ordenar opcionalmente por fecha si es necesario
   return allArticlesData
 }
 
@@ -177,3 +173,4 @@ export function getByCategory(category: CategorySlug) {
 export function getRecent(excludeSlug?: string) {
   return articles.filter((a) => a.slug !== excludeSlug)
 }
+ 
