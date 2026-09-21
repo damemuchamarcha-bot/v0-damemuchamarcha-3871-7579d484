@@ -47,59 +47,76 @@ export function getAllArticles(): Article[] {
       const fileContents = fs.readFileSync(fullPath, 'utf8')
       const matterResult = matter(fileContents)
 
-      if (!matterResult.data.title) {
+      const data = matterResult.data
+
+      if (!data.title) {
         return null
       }
 
-      // Automatización segura de imagen de portada
-      let rawImage = matterResult.data.image || matterResult.data.thumbnail || matterResult.data.portada || '/placeholder.svg'
-      if (rawImage && !rawImage.startsWith('http') && !rawImage.startsWith('/')) {
-        rawImage = `/${rawImage}`
+      // --- COMODÍN TOTAL PARA IMAGEN ---
+      let rawImage = data.image || data.thumbnail || data.portada || data.photo || '/placeholder.svg'
+      if (typeof rawImage === 'string' && rawImage.trim() !== '') {
+        if (!rawImage.startsWith('http') && !rawImage.startsWith('/')) {
+          rawImage = `/${rawImage}`
+        }
+      } else {
+        rawImage = '/placeholder.svg'
       }
 
-      // Automatización segura de YouTube
-      let rawYoutube = matterResult.data.youtube || matterResult.data.video || ''
-      if (rawYoutube) {
+      // --- COMODÍN TOTAL PARA YOUTUBE ---
+      let rawYoutube = data.youtube || data.video || data.yt || ''
+      if (typeof rawYoutube === 'string' && rawYoutube.trim() !== '') {
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
         const match = rawYoutube.match(regExp)
         if (match && match[2].length === 11) {
           rawYoutube = `https://www.youtube.com/embed/${match[2]}`
         }
+      } else {
+        rawYoutube = ''
       }
 
-      // Automatización segura de Spotify
-      let rawSpotify = matterResult.data.spotify || matterResult.data.audio || ''
-      if (rawSpotify && !rawSpotify.includes('/embed/')) {
-        rawSpotify = rawSpotify.replace('open.spotify.com/', 'open.spotify.com/embed/')
+      // --- COMODÍN TOTAL PARA SPOTIFY ---
+      let rawSpotify = data.spotify || data.audio || data.spo || ''
+      if (typeof rawSpotify === 'string' && rawSpotify.trim() !== '') {
+        if (!rawSpotify.includes('/embed/')) {
+          rawSpotify = rawSpotify.replace('open.spotify.com/', 'open.spotify.com/embed/')
+        }
+      } else {
+        rawSpotify = ''
       }
 
-      // Automatización segura de Galería
-      const rawGallery = matterResult.data.gallery || matterResult.data.images || []
+      // --- COMODÍN TOTAL PARA GALERÍA ---
+      const rawGallery = data.gallery || data.images || data.fotos || []
       const formattedGallery = Array.isArray(rawGallery) 
-        ? rawGallery.map((img: string) => (img.startsWith('http') || img.startsWith('/') ? img : `/${img}`))
+        ? rawGallery.map((img: string) => {
+            if (typeof img === 'string') {
+              return img.startsWith('http') || img.startsWith('/') ? img : `/${img}`
+            }
+            return ''
+          }).filter(Boolean)
         : []
 
       const rawBody = matterResult.content
         ? matterResult.content.split('\n\n').map((p) => p.trim()).filter(Boolean)
         : ['Contenido próximamente...']
 
-      const category = matterResult.data.category || 'analisis-de-albumes'
+      const category = data.category || 'analisis-de-albumes'
 
       return {
         slug,
-        title: matterResult.data.title,
-        excerpt: matterResult.data.excerpt || '',
-        section: matterResult.data.section || 'musica',
+        title: data.title,
+        excerpt: data.excerpt || '',
+        section: data.section || 'musica',
         category,
-        categoryLabel: matterResult.data.categoryLabel || CATEGORY_LABELS[category as CategorySlug] || 'Artículo',
-        author: matterResult.data.author || 'Redacción',
-        date: matterResult.data.date
-          ? new Date(matterResult.data.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()
+        categoryLabel: data.categoryLabel || CATEGORY_LABELS[category as CategorySlug] || 'Artículo',
+        author: data.author || 'Redacción',
+        date: data.date
+          ? new Date(data.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()
           : '21 SEPT 2026',
-        timeAgo: matterResult.data.timeAgo || 'Reciente',
-        readingTime: matterResult.data.readingTime || '5 min de lectura',
+        timeAgo: data.timeAgo || 'Reciente',
+        readingTime: data.readingTime || '5 min de lectura',
         image: rawImage,
-        featured: Boolean(matterResult.data.featured),
+        featured: Boolean(data.featured),
         spotify: rawSpotify,
         youtube: rawYoutube,
         gallery: formattedGallery,
