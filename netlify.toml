@@ -1,6 +1,6 @@
 [build]
-  command = "pnpm install --no-frozen-lockfile && npm run build"
+  command = "npm run build"
   publish = "out"
 
 [build.environment]
-  NETLIFY_USE_PNPM = "true"
+  NPM_FLAGS = "--no-frozen-lockfile"
