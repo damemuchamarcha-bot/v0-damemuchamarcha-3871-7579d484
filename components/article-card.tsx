@@ -8,10 +8,16 @@ export function ArticleCard({
   article,
   size = 'md',
 }: {
-  article: Article
+  article?: Article
   size?: 'md' | 'lg'
 }) {
+  // Protección de seguridad: si no hay artículo o no tiene slug, no se renderiza para evitar fallos de build
+  if (!article || !article.slug) {
+    return null
+  }
+
   const isLarge = size === 'lg'
+  
   return (
     <Link
       href={`/articulo/${article.slug}`}
@@ -20,7 +26,7 @@ export function ArticleCard({
       <div className={`relative w-full overflow-hidden ${isLarge ? 'aspect-[16/10]' : 'aspect-[4/3]'}`}>
         <Image
           src={article.image || '/placeholder.svg'}
-          alt={article.title}
+          alt={article.title || 'Artículo'}
           fill
           sizes="(max-width: 768px) 100vw, 33vw"
           className="object-cover grayscale-[35%] transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0"
