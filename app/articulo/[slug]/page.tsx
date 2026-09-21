@@ -8,30 +8,6 @@ import { articles, getArticle, getRecent } from '@/lib/articles'
 import { CategoryTag } from '@/components/category-tag'
 import { ArticleCard } from '@/components/article-card'
 
-// Función de utilidad para convertir cualquier URL de YouTube al formato /embed/
-function getYouTubeEmbedUrl(url?: string): string | null {
-  if (!url) return null
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
-  const match = url.match(regExp)
-  return match && match[2].length === 11 ? `https://www.youtube.com/embed/${match[2]}` : null
-}
-
-// Función de utilidad para formatear URL de Spotify si hace falta
-function getSpotifyEmbedUrl(url?: string): string | null {
-  if (!url) return null
-  if (url.includes('/embed/')) return url
-  return url.replace('open.spotify.com/', 'open.spotify.com/embed/')
-}
-
-// Función para asegurar que las rutas de imágenes no fallen
-function formatImageUrl(src?: string): string {
-  if (!src) return '/placeholder.svg'
-  if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('/')) {
-    return src
-  }
-  return `/${src}`
-}
-
 export function generateStaticParams() {
   return articles.map((a) => ({ slug: a.slug }))
 }
@@ -43,7 +19,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params
   const article = getArticle(slug)
-  if (!article) return { title: 'Artículo no encontrado — Dame Marcha' }
+  if (!article) return { title: 'Artículo no encontrado' }
   return {
     title: `${article.title} — Dame Marcha`,
     description: article.excerpt,
@@ -60,15 +36,13 @@ export default async function ArticlePage({
   if (!article) notFound()
 
   const related = getRecent(article.slug).slice(0, 3)
-  const youtubeEmbed = getYouTubeEmbedUrl(article.youtube)
-  const spotifyEmbed = getSpotifyEmbedUrl(article.spotify)
 
   return (
     <article>
-      {/* Header image */}
+      {/* Header image con la estética original */}
       <div className="relative aspect-[16/10] w-full sm:aspect-[21/9]">
         <Image
-          src={formatImageUrl(article.image)}
+          src={article.image || '/placeholder.svg'}
           alt={article.title}
           fill
           priority
@@ -83,7 +57,7 @@ export default async function ArticlePage({
           href={`/${article.section}`}
           className="mb-6 inline-flex items-center gap-2 font-display text-sm uppercase tracking-wide text-punk-yellow drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)] transition-colors hover:text-punk-pink"
         >
-          <ArrowLeft className="size-4" aria-hidden="true" />
+          <ArrowLeft className="size-4" />
           Volver a {article.section === 'cine' ? 'Cine' : 'Música'}
         </Link>
 
@@ -104,16 +78,16 @@ export default async function ArticlePage({
             Por {article.author}
           </span>
           <span className="flex items-center gap-1.5">
-            <Calendar className="size-4" aria-hidden="true" />
+            <Calendar className="size-4" />
             {article.date}
           </span>
           <span className="flex items-center gap-1.5">
-            <Clock className="size-4" aria-hidden="true" />
+            <Clock className="size-4" />
             {article.readingTime}
           </span>
         </div>
 
-        {/* Body con soporte real para Markdown (negritas y cursivas) */}
+        {/* Cuerpo del artículo respetando la estructura original */}
         <div className="mt-10 flex flex-col gap-6">
           {article.body.map((para, i) => (
             <div
@@ -137,37 +111,35 @@ export default async function ArticlePage({
           ))}
         </div>
 
-        {/* Spotify embed */}
-        {spotifyEmbed && (
+        {/* Spotify si existe */}
+        {article.spotify && (
           <div className="mt-12">
             <h2 className="mb-4 font-display text-2xl uppercase tracking-tight text-punk-cream">
-              La banda sonora <span className="text-punk-yellow">/</span> Spotify
+              Banda sonora <span className="text-punk-yellow">/</span> Spotify
             </h2>
             <div className="border-2 border-punk-pink overflow-hidden">
               <iframe
-                title="Reproductor de Spotify"
-                src={spotifyEmbed}
+                src={article.spotify}
                 width="100%"
                 height="352"
-                loading="lazy"
+                frameBorder="0"
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                className="block"
+                loading="lazy"
               />
             </div>
           </div>
         )}
 
-        {/* YouTube embed */}
-        {youtubeEmbed && (
+        {/* YouTube si existe */}
+        {article.youtube && (
           <div className="mt-12">
             <h2 className="mb-4 font-display text-2xl uppercase tracking-tight text-punk-cream">
               En movimiento <span className="text-punk-pink">/</span> Vídeo
             </h2>
             <div className="relative aspect-video border-2 border-punk-yellow overflow-hidden">
               <iframe
-                title="Reproductor de YouTube"
-                src={youtubeEmbed}
-                loading="lazy"
+                src={article.youtube}
+                title="YouTube video player"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 className="absolute inset-0 size-full"
@@ -176,7 +148,7 @@ export default async function ArticlePage({
           </div>
         )}
 
-        {/* Gallery */}
+        {/* Galería si existe */}
         {article.gallery && article.gallery.length > 0 && (
           <div className="mt-12 mb-4">
             <h2 className="mb-4 font-display text-2xl uppercase tracking-tight text-punk-cream">
@@ -189,10 +161,9 @@ export default async function ArticlePage({
                   className="relative aspect-[4/3] overflow-hidden border-2 border-white/10"
                 >
                   <Image
-                    src={formatImageUrl(src)}
+                    src={src}
                     alt={`${article.title} — imagen ${i + 1}`}
                     fill
-                    sizes="(max-width: 640px) 100vw, 50vw"
                     className="object-cover transition-transform duration-500 hover:scale-105"
                   />
                 </div>
@@ -202,7 +173,7 @@ export default async function ArticlePage({
         )}
       </div>
 
-      {/* Related */}
+      {/* Artículos relacionados */}
       <section className="mx-auto mt-16 max-w-7xl px-4 py-14 sm:px-6">
         <div className="mb-8 border-b-2 border-punk-pink pb-4">
           <h2 className="font-display text-3xl uppercase leading-none tracking-tight text-punk-cream sm:text-4xl">
