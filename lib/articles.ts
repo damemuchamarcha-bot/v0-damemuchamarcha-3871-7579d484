@@ -53,17 +53,20 @@ export function getAllArticles(): Article[] {
         return null
       }
 
-      // --- COMODÍN TOTAL PARA IMAGEN ---
+      // --- TRATAMIENTO DE IMAGEN PARA NEXT.JS ---
       let rawImage = data.image || data.thumbnail || data.portada || data.photo || '/placeholder.svg'
       if (typeof rawImage === 'string' && rawImage.trim() !== '') {
-        if (!rawImage.startsWith('http') && !rawImage.startsWith('/')) {
+        // Si empieza por uploads/ sin barra o con barra, nos aseguramos de que Next.js la busque bien
+        if (rawImage.startsWith('uploads/')) {
+          rawImage = `/${rawImage}`
+        } else if (!rawImage.startsWith('http') && !rawImage.startsWith('/')) {
           rawImage = `/${rawImage}`
         }
       } else {
         rawImage = '/placeholder.svg'
       }
 
-      // --- COMODÍN TOTAL PARA YOUTUBE ---
+      // --- YOUTUBE ---
       let rawYoutube = data.youtube || data.video || data.yt || ''
       if (typeof rawYoutube === 'string' && rawYoutube.trim() !== '') {
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
@@ -75,7 +78,7 @@ export function getAllArticles(): Article[] {
         rawYoutube = ''
       }
 
-      // --- COMODÍN TOTAL PARA SPOTIFY ---
+      // --- SPOTIFY ---
       let rawSpotify = data.spotify || data.audio || data.spo || ''
       if (typeof rawSpotify === 'string' && rawSpotify.trim() !== '') {
         if (!rawSpotify.includes('/embed/')) {
@@ -85,11 +88,12 @@ export function getAllArticles(): Article[] {
         rawSpotify = ''
       }
 
-      // --- COMODÍN TOTAL PARA GALERÍA ---
+      // --- GALERÍA ---
       const rawGallery = data.gallery || data.images || data.fotos || []
       const formattedGallery = Array.isArray(rawGallery) 
         ? rawGallery.map((img: string) => {
             if (typeof img === 'string') {
+              if (img.startsWith('uploads/')) return `/${img}`
               return img.startsWith('http') || img.startsWith('/') ? img : `/${img}`
             }
             return ''
