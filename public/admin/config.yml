@@ -1,5 +1,5 @@
 backend:
-  name:git-gateway
+  name: git-gateway
   repo: damemuchamarcha-bot/web1  # <--- CAMBIA ESTO por tu usuario y nombre de repositorio en GitHub
   branch: main # o 'master' según cómo se llame tu rama principal
 
