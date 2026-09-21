@@ -48,15 +48,15 @@ export function getAllArticles(): Article[] {
       const matterResult = matter(fileContents)
 
       const data = matterResult.data
+      const content = matterResult.content || ''
 
       if (!data.title) {
         return null
       }
 
-      // --- TRATAMIENTO DE IMAGEN PARA NEXT.JS ---
+      // --- IMAGEN GLOBAL ---
       let rawImage = data.image || data.thumbnail || data.portada || data.photo || '/placeholder.svg'
       if (typeof rawImage === 'string' && rawImage.trim() !== '') {
-        // Si empieza por uploads/ sin barra o con barra, nos aseguramos de que Next.js la busque bien
         if (rawImage.startsWith('uploads/')) {
           rawImage = `/${rawImage}`
         } else if (!rawImage.startsWith('http') && !rawImage.startsWith('/')) {
@@ -66,29 +66,39 @@ export function getAllArticles(): Article[] {
         rawImage = '/placeholder.svg'
       }
 
-      // --- YOUTUBE ---
+      // --- YOUTUBE GLOBAL (Busca en cabecera O dentro del texto del artículo) ---
       let rawYoutube = data.youtube || data.video || data.yt || ''
-      if (typeof rawYoutube === 'string' && rawYoutube.trim() !== '') {
+      if (!rawYoutube) {
+        const ytRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+        const matchContent = content.match(ytRegex)
+        if (matchContent && matchContent[1]) {
+          rawYoutube = `https://www.youtube.com/embed/${matchContent[1]}`
+        }
+      } else {
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
         const match = rawYoutube.match(regExp)
         if (match && match[2].length === 11) {
           rawYoutube = `https://www.youtube.com/embed/${match[2]}`
         }
-      } else {
-        rawYoutube = ''
       }
 
-      // --- SPOTIFY ---
+      // --- SPOTIFY GLOBAL ---
       let rawSpotify = data.spotify || data.audio || data.spo || ''
-      if (typeof rawSpotify === 'string' && rawSpotify.trim() !== '') {
+      if (!rawSpotify) {
+        const spRegex = /(?:https?:\/\/)?(?:open\.)?spotify\.com\/(?:track|album|playlist)\/([a-zA-Z0-9]+)/
+        const matchSp = content.match(spRegex)
+        if (matchSp && matchSp[1]) {
+          // Detectamos si es álbum o track de forma sencilla
+          const type = content.includes('/album/') ? 'album' : 'track'
+          rawSpotify = `https://open.spotify.com/embed/${type}/${matchSp[1]}`
+        }
+      } else if (typeof rawSpotify === 'string' && rawSpotify.trim() !== '') {
         if (!rawSpotify.includes('/embed/')) {
           rawSpotify = rawSpotify.replace('open.spotify.com/', 'open.spotify.com/embed/')
         }
-      } else {
-        rawSpotify = ''
       }
 
-      // --- GALERÍA ---
+      // --- GALERÍA GLOBAL ---
       const rawGallery = data.gallery || data.images || data.fotos || []
       const formattedGallery = Array.isArray(rawGallery) 
         ? rawGallery.map((img: string) => {
@@ -100,8 +110,8 @@ export function getAllArticles(): Article[] {
           }).filter(Boolean)
         : []
 
-      const rawBody = matterResult.content
-        ? matterResult.content.split('\n\n').map((p) => p.trim()).filter(Boolean)
+      const rawBody = content
+        ? content.split('\n\n').map((p) => p.trim()).filter(Boolean)
         : ['Contenido próximamente...']
 
       const category = data.category || 'analisis-de-albumes'
@@ -121,8 +131,8 @@ export function getAllArticles(): Article[] {
         readingTime: data.readingTime || '5 min de lectura',
         image: rawImage,
         featured: Boolean(data.featured),
-        spotify: rawSpotify,
-        youtube: rawYoutube,
+        spotify: rawSpotify || undefined,
+        youtube: rawYoutube || undefined,
         gallery: formattedGallery,
         body: rawBody,
       } as Article
