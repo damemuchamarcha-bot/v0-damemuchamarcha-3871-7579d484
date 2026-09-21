@@ -1,7 +1,6 @@
 backend:
   name: git-gateway
-  repo: damemuchamarcha-bot/web1  # <--- CAMBIA ESTO por tu usuario y nombre de repositorio en GitHub
-  branch: main # o 'master' según cómo se llame tu rama principal
+  branch: main
 
 media_folder: "public/uploads"
 public_folder: "/uploads"
@@ -9,7 +8,7 @@ public_folder: "/uploads"
 collections:
   - name: "articles"
     label: "Artículos"
-    folder: "content/articles" # Carpeta donde se guardarán los posts en formato Markdown (compatible con tu web)
+    folder: "content/articles"
     create: true
     slug: "{{slug}}"
     fields:
