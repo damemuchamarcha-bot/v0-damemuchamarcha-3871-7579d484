@@ -8,6 +8,30 @@ import { articles, getArticle, getRecent } from '@/lib/articles'
 import { CategoryTag } from '@/components/category-tag'
 import { ArticleCard } from '@/components/article-card'
 
+// Función de utilidad para convertir cualquier URL de YouTube al formato /embed/
+function getYouTubeEmbedUrl(url?: string): string | null {
+  if (!url) return null
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
+  const match = url.match(regExp)
+  return match && match[2].length === 11 ? `https://www.youtube.com/embed/${match[2]}` : null
+}
+
+// Función de utilidad para formatear URL de Spotify si hace falta
+function getSpotifyEmbedUrl(url?: string): string | null {
+  if (!url) return null
+  if (url.includes('/embed/')) return url
+  return url.replace('open.spotify.com/', 'open.spotify.com/embed/')
+}
+
+// Función para asegurar que las rutas de imágenes no fallen
+function formatImageUrl(src?: string): string {
+  if (!src) return '/placeholder.svg'
+  if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('/')) {
+    return src
+  }
+  return `/${src}`
+}
+
 export function generateStaticParams() {
   return articles.map((a) => ({ slug: a.slug }))
 }
@@ -36,13 +60,15 @@ export default async function ArticlePage({
   if (!article) notFound()
 
   const related = getRecent(article.slug).slice(0, 3)
+  const youtubeEmbed = getYouTubeEmbedUrl(article.youtube)
+  const spotifyEmbed = getSpotifyEmbedUrl(article.spotify)
 
   return (
     <article>
       {/* Header image */}
       <div className="relative aspect-[16/10] w-full sm:aspect-[21/9]">
         <Image
-          src={article.image || '/placeholder.svg'}
+          src={formatImageUrl(article.image)}
           alt={article.title}
           fill
           priority
@@ -112,15 +138,15 @@ export default async function ArticlePage({
         </div>
 
         {/* Spotify embed */}
-        {article.spotify && (
+        {spotifyEmbed && (
           <div className="mt-12">
             <h2 className="mb-4 font-display text-2xl uppercase tracking-tight text-punk-cream">
               La banda sonora <span className="text-punk-yellow">/</span> Spotify
             </h2>
-            <div className="border-2 border-punk-pink">
+            <div className="border-2 border-punk-pink overflow-hidden">
               <iframe
                 title="Reproductor de Spotify"
-                src={article.spotify}
+                src={spotifyEmbed}
                 width="100%"
                 height="352"
                 loading="lazy"
@@ -132,15 +158,15 @@ export default async function ArticlePage({
         )}
 
         {/* YouTube embed */}
-        {article.youtube && (
+        {youtubeEmbed && (
           <div className="mt-12">
             <h2 className="mb-4 font-display text-2xl uppercase tracking-tight text-punk-cream">
               En movimiento <span className="text-punk-pink">/</span> Vídeo
             </h2>
-            <div className="relative aspect-video border-2 border-punk-yellow">
+            <div className="relative aspect-video border-2 border-punk-yellow overflow-hidden">
               <iframe
                 title="Reproductor de YouTube"
-                src={article.youtube}
+                src={youtubeEmbed}
                 loading="lazy"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
@@ -163,7 +189,7 @@ export default async function ArticlePage({
                   className="relative aspect-[4/3] overflow-hidden border-2 border-white/10"
                 >
                   <Image
-                    src={src || '/placeholder.svg'}
+                    src={formatImageUrl(src)}
                     alt={`${article.title} — imagen ${i + 1}`}
                     fill
                     sizes="(max-width: 640px) 100vw, 50vw"
