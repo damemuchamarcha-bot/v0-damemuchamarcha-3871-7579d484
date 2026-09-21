@@ -26,6 +26,68 @@ export async function generateMetadata({
   }
 }
 
+// Helper para transformar enlaces de YouTube/Spotify/Instagram en embeds automáticos estilo WordPress
+function renderEmbeddedMedia(href: string) {
+  // YouTube embed
+  const ytMatch = href.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
+  if (ytMatch && ytMatch[1]) {
+    return (
+      <span className="my-8 block w-full">
+        <span className="relative block aspect-video w-full overflow-hidden border-2 border-punk-yellow">
+          <iframe
+            title="Reproductor de YouTube"
+            src={`https://www.youtube.com/embed/${ytMatch[1]}`}
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="absolute inset-0 size-full border-0"
+          />
+        </span>
+      </span>
+    )
+  }
+
+  // Spotify embed
+  const spMatch = href.match(/(?:https?:\/\/)?(?:open\.)?spotify\.com\/(track|album|playlist|episode)\/([a-zA-Z0-9]+)/)
+  if (spMatch && spMatch[1] && spMatch[2]) {
+    return (
+      <span className="my-8 block w-full">
+        <span className="block overflow-hidden border-2 border-punk-pink">
+          <iframe
+            title="Reproductor de Spotify"
+            src={`https://open.spotify.com/embed/${spMatch[1]}/${spMatch[2]}`}
+            width="100%"
+            height="352"
+            loading="lazy"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            className="block border-0"
+          />
+        </span>
+      </span>
+    )
+  }
+
+  // Instagram embed
+  const igMatch = href.match(/(?:https?:\/\/)?(?:www\.)?instagram\.com\/(?:p|reel)\/([a-zA-Z0-9_-]+)/)
+  if (igMatch && igMatch[1]) {
+    return (
+      <span className="my-8 block w-full">
+        <span className="relative block aspect-[4/5] max-w-md mx-auto overflow-hidden border-2 border-punk-cream/20">
+          <iframe
+            title="Publicación de Instagram"
+            src={`https://www.instagram.com/p/${igMatch[1]}/embed`}
+            loading="lazy"
+            allowFullScreen
+            className="absolute inset-0 size-full border-0"
+          />
+        </span>
+      </span>
+    )
+  }
+
+  return null
+}
+
 export default async function ArticlePage({
   params,
 }: {
@@ -35,172 +97,169 @@ export default async function ArticlePage({
   const article = getArticle(slug)
   if (!article) notFound()
 
-  console.log("ARTÍCULO CARGADO:", article);
-
   const related = getRecent(article.slug).slice(0, 3)
 
   return (
-    <>
-      {/* CHIVATO VISUAL TEMPORAL */}
-      <div className="bg-punk-pink text-punk-black p-4 font-mono text-sm my-4 max-w-3xl mx-auto z-50 relative">
-        <p><strong>DEBUG - Título:</strong> {article.title}</p>
-        <p><strong>DEBUG - Imagen:</strong> {article.image}</p>
-        <p><strong>DEBUG - YouTube:</strong> {article.youtube || 'Ninguno'}</p>
-        <p><strong>DEBUG - Spotify:</strong> {article.spotify || 'Ninguno'}</p>
+    <article>
+      {/* Header image de portada */}
+      <div className="relative aspect-[16/10] w-full sm:aspect-[21/9]">
+        <Image
+          src={article.image || '/placeholder.svg'}
+          alt={article.title}
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+          unoptimized={article.image?.startsWith('/uploads')}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-punk-black via-punk-black/50 to-punk-black/20" />
       </div>
 
-      <article>
-        {/* Header image automática */}
-        <div className="relative aspect-[16/10] w-full sm:aspect-[21/9]">
-          <Image
-            src={article.image || '/placeholder.svg'}
-            alt={article.title}
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-punk-black via-punk-black/50 to-punk-black/20" />
+      <div className="relative z-10 mx-auto -mt-16 max-w-3xl px-4 sm:px-6">
+        <Link
+          href={`/${article.section}`}
+          className="mb-6 inline-flex items-center gap-2 font-display text-sm uppercase tracking-wide text-punk-yellow drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)] transition-colors hover:text-punk-pink"
+        >
+          <ArrowLeft className="size-4" aria-hidden="true" />
+          Volver a {article.section === 'cine' ? 'Cine' : 'Música'}
+        </Link>
+
+        <div className="mb-4">
+          <CategoryTag label={article.categoryLabel} section={article.section} />
         </div>
 
-        <div className="relative z-10 mx-auto -mt-16 max-w-3xl px-4 sm:px-6">
-          <Link
-            href={`/${article.section}`}
-            className="mb-6 inline-flex items-center gap-2 font-display text-sm uppercase tracking-wide text-punk-yellow drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)] transition-colors hover:text-punk-pink"
-          >
-            <ArrowLeft className="size-4" aria-hidden="true" />
-            Volver a {article.section === 'cine' ? 'Cine' : 'Música'}
-          </Link>
+        <h1 className="text-balance font-display text-4xl uppercase leading-[0.92] tracking-tight text-punk-cream sm:text-6xl">
+          {article.title}
+        </h1>
 
-          <div className="mb-4">
-            <CategoryTag label={article.categoryLabel} section={article.section} />
-          </div>
+        <p className="mt-5 text-pretty text-lg leading-relaxed text-punk-cream/75">
+          {article.excerpt}
+        </p>
 
-          <h1 className="text-balance font-display text-4xl uppercase leading-[0.92] tracking-tight text-punk-cream sm:text-6xl">
-            {article.title}
-          </h1>
+        <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-y-2 border-white/10 py-4 text-sm text-punk-cream/70">
+          <span className="font-semibold uppercase tracking-wide text-punk-cream">
+            Por {article.author}
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Calendar className="size-4" aria-hidden="true" />
+            {article.date}
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Clock className="size-4" aria-hidden="true" />
+            {article.readingTime}
+          </span>
+        </div>
 
-          <p className="mt-5 text-pretty text-lg leading-relaxed text-punk-cream/75">
-            {article.excerpt}
-          </p>
+        {/* Cuerpo del artículo con Markdown e Embeds integrados */}
+        <div className="mt-10 flex flex-col gap-6">
+          {article.body.map((para, i) => (
+            <div
+              key={i}
+              className={`text-pretty text-lg leading-[1.8] text-punk-cream/85 ${
+                i === 0
+                  ? 'first-letter:float-left first-letter:mr-3 first-letter:font-display first-letter:text-6xl first-letter:leading-[0.8] first-letter:text-punk-pink'
+                  : ''
+              }`}
+            >
+              <ReactMarkdown
+                components={{
+                  strong: ({ node, ...props }) => <strong className="font-bold text-punk-pink" {...props} />,
+                  em: ({ node, ...props }) => <em className="italic text-punk-cream" {...props} />,
+                  p: ({ node, children, ...props }) => <p className="m-0 leading-relaxed" {...props}>{children}</p>,
+                  
+                  // Renderizado automático de enlaces (YouTube, Spotify, Instagram o enlaces normales)
+                  a: ({ node, href, children, ...props }) => {
+                    if (href) {
+                      const embed = renderEmbeddedMedia(href)
+                      if (embed) return embed
+                    }
+                    return (
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-punk-yellow underline hover:text-punk-pink transition-colors"
+                        {...props}
+                      >
+                        {children}
+                      </a>
+                    )
+                  },
 
-          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-y-2 border-white/10 py-4 text-sm text-punk-cream/70">
-            <span className="font-semibold uppercase tracking-wide text-punk-cream">
-              Por {article.author}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Calendar className="size-4" aria-hidden="true" />
-              {article.date}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Clock className="size-4" aria-hidden="true" />
-              {article.readingTime}
-            </span>
-          </div>
+                  // Renderizado automático de imágenes inline dentro del texto
+                  img: ({ node, src, alt, ...props }) => {
+                    if (!src) return null
+                    let finalSrc = src
+                    if (finalSrc.startsWith('uploads/')) finalSrc = `/${finalSrc}`
 
-          {/* Cuerpo del artículo con Markdown */}
-          <div className="mt-10 flex flex-col gap-6">
-            {article.body.map((para, i) => (
-              <div
-                key={i}
-                className={`text-pretty text-lg leading-[1.8] text-punk-cream/85 ${
-                  i === 0
-                    ? 'first-letter:float-left first-letter:mr-3 first-letter:font-display first-letter:text-6xl first-letter:leading-[0.8] first-letter:text-punk-pink'
-                    : ''
-                }`}
+                    return (
+                      <span className="my-8 block w-full">
+                        <span className="relative block aspect-[16/9] w-full overflow-hidden border-2 border-white/10">
+                          <Image
+                            src={finalSrc}
+                            alt={alt || 'Imagen del artículo'}
+                            fill
+                            sizes="(max-width: 768px) 100vw, 768px"
+                            className="object-cover"
+                            unoptimized={finalSrc.startsWith('/uploads')}
+                          />
+                        </span>
+                        {alt && (
+                          <span className="mt-2 block text-center font-mono text-xs text-punk-cream/60">
+                            {alt}
+                          </span>
+                        )}
+                      </span>
+                    )
+                  },
+                }}
               >
-                <ReactMarkdown
-                  components={{
-                    strong: ({ node, ...props }) => <strong className="font-bold text-punk-pink" {...props} />,
-                    em: ({ node, ...props }) => <em className="italic text-punk-cream" {...props} />,
-                    p: ({ node, ...props }) => <p className="m-0" {...props} />,
-                  }}
-                >
-                  {para}
-                </ReactMarkdown>
-              </div>
-            ))}
-          </div>
-
-          {/* Spotify automático */}
-          {article.spotify && (
-            <div className="mt-12">
-              <h2 className="mb-4 font-display text-2xl uppercase tracking-tight text-punk-cream">
-                La banda sonora <span className="text-punk-yellow">/</span> Spotify
-              </h2>
-              <div className="border-2 border-punk-pink overflow-hidden">
-                <iframe
-                  title="Reproductor de Spotify"
-                  src={article.spotify}
-                  width="100%"
-                  height="352"
-                  loading="lazy"
-                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                  className="block"
-                />
-              </div>
+                {para}
+              </ReactMarkdown>
             </div>
-          )}
-
-          {/* YouTube automático */}
-          {article.youtube && (
-            <div className="mt-12">
-              <h2 className="mb-4 font-display text-2xl uppercase tracking-tight text-punk-cream">
-                En movimiento <span className="text-punk-pink">/</span> Vídeo
-              </h2>
-              <div className="relative aspect-video border-2 border-punk-yellow overflow-hidden">
-                <iframe
-                  title="Reproductor de YouTube"
-                  src={article.youtube}
-                  loading="lazy"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="absolute inset-0 size-full"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Galería automática */}
-          {article.gallery && article.gallery.length > 0 && (
-            <div className="mt-12 mb-4">
-              <h2 className="mb-4 font-display text-2xl uppercase tracking-tight text-punk-cream">
-                Galería <span className="text-punk-yellow">/</span> Fotos
-              </h2>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {article.gallery.map((src, i) => (
-                  <div
-                    key={i}
-                    className="relative aspect-[4/3] overflow-hidden border-2 border-white/10"
-                  >
-                    <Image
-                      src={src}
-                      alt={`${article.title} — imagen ${i + 1}`}
-                      fill
-                      sizes="(max-width: 640px) 100vw, 50vw"
-                      className="object-cover transition-transform duration-500 hover:scale-105"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          ))}
         </div>
 
-        {/* Related */}
-        <section className="mx-auto mt-16 max-w-7xl px-4 py-14 sm:px-6">
-          <div className="mb-8 border-b-2 border-punk-pink pb-4">
-            <h2 className="font-display text-3xl uppercase leading-none tracking-tight text-punk-cream sm:text-4xl">
-              Sigue la <span className="text-punk-pink">marcha</span>
+        {/* Galería adicional opcional de la cabecera */}
+        {article.gallery && article.gallery.length > 0 && (
+          <div className="mt-12 mb-4">
+            <h2 className="mb-4 font-display text-2xl uppercase tracking-tight text-punk-cream">
+              Galería <span className="text-punk-yellow">/</span> Fotos
             </h2>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {article.gallery.map((src, i) => (
+                <div
+                  key={i}
+                  className="relative aspect-[4/3] overflow-hidden border-2 border-white/10"
+                >
+                  <Image
+                    src={src.startsWith('uploads/') ? `/${src}` : src}
+                    alt={`${article.title} — imagen ${i + 1}`}
+                    fill
+                    sizes="(max-width: 640px) 100vw, 50vw"
+                    className="object-cover transition-transform duration-500 hover:scale-105"
+                    unoptimized={src.startsWith('/uploads') || src.startsWith('uploads/')}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {related.map((a) => (
-              <ArticleCard key={a.slug} article={a} />
-            ))}
-          </div>
-        </section>
-      </article>
-    </>
+        )}
+      </div>
+
+      {/* Relacionados */}
+      <section className="mx-auto mt-16 max-w-7xl px-4 py-14 sm:px-6">
+        <div className="mb-8 border-b-2 border-punk-pink pb-4">
+          <h2 className="font-display text-3xl uppercase leading-none tracking-tight text-punk-cream sm:text-4xl">
+            Sigue la <span className="text-punk-pink">marcha</span>
+          </h2>
+        </div>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {related.map((a) => (
+            <ArticleCard key={a.slug} article={a} />
+          ))}
+        </div>
+      </section>
+    </article>
   )
 }
