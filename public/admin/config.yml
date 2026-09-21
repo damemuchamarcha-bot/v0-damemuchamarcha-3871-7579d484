@@ -3,6 +3,12 @@ backend:
   branch: main
 
 media_folder: "public/uploads"
+slug:
+  clean_accents: true
+
+media_library:
+  config:
+    multiple: false
 public_folder: "/uploads"
 
 collections:
