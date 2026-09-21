@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
 import { ArrowLeft, Clock, Calendar } from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
 import { articles, getArticle, getRecent } from '@/lib/articles'
 import { CategoryTag } from '@/components/category-tag'
 import { ArticleCard } from '@/components/article-card'
@@ -86,15 +87,27 @@ export default async function ArticlePage({
           </span>
         </div>
 
-        {/* Body */}
+        {/* Body con soporte real para Markdown (negritas y cursivas) */}
         <div className="mt-10 flex flex-col gap-6">
           {article.body.map((para, i) => (
-            <p
+            <div
               key={i}
-              className="text-pretty text-lg leading-[1.8] text-punk-cream/85 first-letter:float-left first-letter:mr-3 first-letter:font-display first-letter:text-6xl first-letter:leading-[0.8] first-letter:text-punk-pink [&:not(:first-child)]:first-letter:float-none [&:not(:first-child)]:first-letter:mr-0 [&:not(:first-child)]:first-letter:text-lg [&:not(:first-child)]:first-letter:text-punk-cream/85"
+              className={`text-pretty text-lg leading-[1.8] text-punk-cream/85 ${
+                i === 0
+                  ? 'first-letter:float-left first-letter:mr-3 first-letter:font-display first-letter:text-6xl first-letter:leading-[0.8] first-letter:text-punk-pink'
+                  : ''
+              }`}
             >
-              {para}
-            </p>
+              <ReactMarkdown
+                components={{
+                  strong: ({ node, ...props }) => <strong className="font-bold text-punk-pink" {...props} />,
+                  em: ({ node, ...props }) => <em className="italic text-punk-cream" {...props} />,
+                  p: ({ node, ...props }) => <p className="m-0" {...props} />,
+                }}
+              >
+                {para}
+              </ReactMarkdown>
+            </div>
           ))}
         </div>
 
@@ -179,4 +192,3 @@ export default async function ArticlePage({
     </article>
   )
 }
-
