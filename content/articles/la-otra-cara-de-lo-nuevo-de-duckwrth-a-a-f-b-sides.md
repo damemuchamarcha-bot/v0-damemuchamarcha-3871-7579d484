@@ -5,7 +5,7 @@ excerpt: Así es como es el nuevo lanzamiento de Duckwrth
 author: Marta Menjíbar
 section: musica
 categoryLabel: Análisis de álbumes
-image: /uploads/cf5bf9aae8a04609f5a98a7bdf7bafed.1000x1000x1.png
+image: /uploads/duckwrth-cover.png
 ---
 El cantante estadounidense **Duckwrth** lanzó su nuevo disco *A.A.F.B - Sides* tras su último álbum en 2025, *All American F*ckBoy*, que trajo algunas colaboraciones como con el rapero IDK.
 
@@ -28,7 +28,7 @@ En un vídeo publicado en TikTok, Duckwrth anunció que este nuevo álbum funcio
 
 Canciones de desamor y con letras curiosas mantienen la energía del artista al cien por cien.
 
-![Portada del álbum A.A.F.B-Sides](/uploads/cf5bf9aae8a04609f5a98a7bdf7bafed.1000x1000x1.png "Portada del álbum A.A.F.B-Sides")
+![Portada del álbum A.A.F.B-Sides](/uploads/duckwrth-cover.png)
 
 Parte de la responsabilidad del mundo sonoro de este disco recae en los productores, como el propio artista, Pera, Wave IQ, Blake Straus, The Pocket Queen, Wes Singerman, Two Fresh, Max Volante, Chassidy Joiner, Jessica Hampton y AlexKeyz, entre otros.
 
