@@ -1,0 +1,23 @@
+backend:
+  name: github
+  repo: damemuchamarcha-bot/web1  # <--- CAMBIA ESTO por tu usuario y nombre de repositorio en GitHub
+  branch: main # o 'master' según cómo se llame tu rama principal
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+collections:
+  - name: "articles"
+    label: "Artículos"
+    folder: "content/articles" # Carpeta donde se guardarán los posts en formato Markdown (compatible con tu web)
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Título", name: "title", widget: "string"}
+      - {label: "Fecha", name: "date", widget: "datetime"}
+      - {label: "Resumen (Excerpt)", name: "excerpt", widget: "text"}
+      - {label: "Autor", name: "author", widget: "string", default: "Dame Marcha"}
+      - {label: "Sección", name: "section", widget: "select", options: ["musica", "cine"]}
+      - {label: "Categoría", name: "categoryLabel", widget: "string"}
+      - {label: "Imagen de Portada", name: "image", widget: "image"}
+      - {label: "Contenido del Artículo", name: "body", widget: "markdown"}
