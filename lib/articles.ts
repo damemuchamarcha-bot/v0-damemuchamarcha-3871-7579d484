@@ -98,6 +98,7 @@ export const SECTION_CATEGORIES: Record<Section, CategorySlug[]> = {
 }
 
 // Función para obtener todos los artículos dinámicamente desde content/articles
+// Función para obtener todos los artículos dinámicamente desde content/articles de forma segura
 export function getAllArticles(): Article[] {
   if (!fs.existsSync(articlesDirectory)) {
     return []
@@ -112,7 +113,11 @@ export function getAllArticles(): Article[] {
       const fileContents = fs.readFileSync(fullPath, 'utf8')
       const matterResult = matter(fileContents)
 
-      // Procesar el cuerpo del markdown separándolo por saltos de línea para los párrafos
+      // Si el archivo no tiene título o slug, lo ignoramos para que no rompa la web
+      if (!matterResult.data.title) {
+        return null
+      }
+
       const rawBody = matterResult.content
         .split('\n\n')
         .map((p) => p.trim())
@@ -120,7 +125,7 @@ export function getAllArticles(): Article[] {
 
       return {
         slug,
-        title: matterResult.data.title || '',
+        title: matterResult.data.title,
         excerpt: matterResult.data.excerpt || '',
         section: matterResult.data.section || 'musica',
         category: matterResult.data.category || 'analisis-de-albumes',
@@ -141,6 +146,10 @@ export function getAllArticles(): Article[] {
         inlineImageCaption: matterResult.data.inlineImageCaption,
       } as Article
     })
+    .filter((article): article is Article => article !== null) // Filtramos los nulos de forma segura
+
+  return allArticlesData
+}
 
   // Ordenar opcionalmente por fecha si es necesario
   return allArticlesData
