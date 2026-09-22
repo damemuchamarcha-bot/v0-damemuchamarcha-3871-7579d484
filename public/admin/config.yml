@@ -8,7 +8,8 @@ media_library:
     publicKey: "demopublickey"
     tabs: "file url camera gdrive"
     effects: "crop,rotate"
-    crop: "21:9, 16:9, 4:3, 1:1, free"
+    settings:
+      crop: "21:9, 16:9, 4:3, 1:1, free"
 
 media_folder: "public/uploads"
 public_folder: "/uploads"
