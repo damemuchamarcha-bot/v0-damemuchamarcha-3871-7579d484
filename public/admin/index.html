@@ -19,25 +19,24 @@
             name: "url",
             label: "Enlace de Spotify",
             widget: "string",
-            hint: "Pega el enlace de la canción, álbum o playlist"
+            hint: "Pega la URL de la canción, álbum o playlist"
           }
         ],
-        // Soporta URLs estándar e intl-es/intl-pt/etc.
-        pattern: /^<iframe src="https:\/\/open\.spotify\.com\/embed\/(?:intl-[a-z]+\/)?(track|album|playlist)\/([a-zA-Z0-9]+).*"><\/iframe>$/,
+        // Reconoce tanto la sintaxis limpia como etiquetas antiguas
+        pattern: /^(?:\{\{<\s*spotify\s+"([^"]+)"\s*>\}\}|<iframe[^>]*src="https:\/\/open\.spotify\.com\/embed\/([^"]+)"[^>]*><\/iframe>)/,
         fromBlock: function(match) {
-          return {
-            url: "https://open.spotify.com/" + match[1] + "/" + match[2]
-          };
+          if (match[1]) return { url: match[1] };
+          if (match[2]) return { url: "https://open.spotify.com/" + match[2] };
+          return { url: "" };
         },
         toBlock: function(obj) {
           if (!obj.url) return "";
-          var cleanUrl = obj.url.replace(/open\.spotify\.com\/(?:intl-[a-z]+\/)?/, "open.spotify.com/embed/");
-          return '<iframe src="' + cleanUrl + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>';
+          return '{{< spotify "' + obj.url.trim() + '" >}}';
         },
         toPreview: function(obj) {
-          if (!obj.url) return "";
-          var cleanUrl = obj.url.replace(/open\.spotify\.com\/(?:intl-[a-z]+\/)?/, "open.spotify.com/embed/");
-          return '<div style="padding: 10px; background: #121212; border-radius: 8px;"><iframe src="' + cleanUrl + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe></div>';
+          if (!obj.url) return '<div style="padding: 10px; color: #888;">Introduce una URL de Spotify...</div>';
+          var cleanUrl = obj.url.trim().replace(/open\.spotify\.com\/(?:intl-[a-z]+\/)?/, "open.spotify.com/embed/");
+          return '<div style="padding: 12px; background: #121212; border-radius: 12px; text-align: center;"><iframe src="' + cleanUrl + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media" style="border-radius: 8px;"></iframe></div>';
         }
       });
 
@@ -53,19 +52,18 @@
             hint: "Ejemplo: https://www.instagram.com/p/C_EXAMPLE/"
           }
         ],
-        pattern: /^https?:\/\/(www\.)?instagram\.com\/(p|reel)\/([^/?#&]+)/,
+        pattern: /^(?:\{\{<\s*instagram\s+"([^"]+)"\s*>\}\}|https?:\/\/(?:www\.)?instagram\.com\/(?:p|reel)\/([^/?#&]+))/,
         fromBlock: function(match) {
-          return { url: match[0] };
+          return { url: match[1] || match[0] };
         },
         toBlock: function(obj) {
           if (!obj.url) return "";
-          var cleanUrl = obj.url.split('?')[0].replace(/\/$/, "");
-          return '<iframe src="' + cleanUrl + '/embed" width="400" height="480" frameborder="0" scrolling="no" allowtransparency="true"></iframe>';
+          return '{{< instagram "' + obj.url.trim() + '" >}}';
         },
         toPreview: function(obj) {
-          if (!obj.url) return "";
-          var cleanUrl = obj.url.split('?')[0].replace(/\/$/, "");
-          return '<div style="display: flex; justify-content: center; background: #fafafa; padding: 10px; border: 1px solid #ddd; border-radius: 8px;"><iframe src="' + cleanUrl + '/embed" width="400" height="480" frameborder="0" scrolling="no"></iframe></div>';
+          if (!obj.url) return '<div style="padding: 10px; color: #888;">Introduce una URL de Instagram...</div>';
+          var cleanUrl = obj.url.trim().split('?')[0].replace(/\/$/, "");
+          return '<div style="display: flex; justify-content: center; background: #fafafa; padding: 12px; border: 1px solid #e0e0e0; border-radius: 12px;"><iframe src="' + cleanUrl + '/embed" width="400" height="480" frameborder="0" scrolling="no"></iframe></div>';
         }
       });
 
@@ -93,11 +91,11 @@
           return '<div class="cms-gallery">\n  ' + imgTags + '\n</div>';
         },
         toPreview: function(obj) {
-          if (!obj.images || !obj.images.length) return "";
+          if (!obj.images || !obj.images.length) return '<div style="padding: 10px; color: #888;">Selecciona imágenes para la galería...</div>';
           var imgTags = obj.images.map(function(img) {
-            return '<img src="' + img + '" style="width: 120px; height: 120px; object-fit: cover; margin: 4px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" />';
+            return '<img src="' + img + '" style="width: 120px; height: 120px; object-fit: cover; margin: 4px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);" />';
           }).join('');
-          return '<div style="display: flex; flex-wrap: wrap; gap: 8px; background: #f0f0f0; padding: 12px; border-radius: 8px;">' + imgTags + '</div>';
+          return '<div style="display: flex; flex-wrap: wrap; gap: 8px; background: #f8f9fa; padding: 12px; border-radius: 12px; border: 1px dashed #ccc;">' + imgTags + '</div>';
         }
       });
     </script>
