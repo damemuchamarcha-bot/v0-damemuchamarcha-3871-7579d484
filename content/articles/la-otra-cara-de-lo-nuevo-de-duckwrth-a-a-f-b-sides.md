@@ -28,6 +28,8 @@ En un vídeo publicado en TikTok, Duckwrth anunció que este nuevo álbum funcio
 
 Canciones de desamor y con letras curiosas mantienen la energía del artista al cien por cien.
 
+{{< spotify "https://open.spotify.com/intl-es/album/5LYjokc0bkRmpo3zh43e3s" >}}
+
 Parte de la responsabilidad del mundo sonoro de este disco recae en los productores, como el propio artista, Pera, Wave IQ, Blake Straus, The Pocket Queen, Wes Singerman, Two Fresh, Max Volante, Chassidy Joiner, Jessica Hampton y AlexKeyz, entre otros.
 
 El sonido de Duckwrth ha evolucionado a algo más punk, rock-alt, indie y ha perdido un poco sus inicios con el rap. Aunque para nosotros es como si cogiéramos una máquina del tiempo al pasado y volviéramos a vivir un poco el disco de ***THE FALLING MAN* y *SuperGood***; son como si esos dos discos se hubieran fusionado con ***All American Fuckboy***, pero sin el elemento del rap.
