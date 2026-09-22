@@ -10,7 +10,6 @@
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
     <script>
-      // 1. WIDGET SPOTIFY (Soporta iframe y shortcode)
       CMS.registerEditorComponent({
         id: "spotify",
         label: "🎵 Spotify",
@@ -18,34 +17,39 @@
           {
             name: "url",
             label: "Enlace de Spotify",
-            widget: "string",
-            hint: "Pega la URL del álbum, canción o playlist"
+            widget: "string"
           }
         ],
-        // Captura tanto shortcodes como iframes previa o posteriormente insertados
-        pattern: /(?:\{\{<\s*spotify\s+"?([^"\s>]+)"?\s*>\}\}|<iframe[^>]*src="https:\/\/open\.spotify\.com\/embed\/([^"?]+)[^"]*"[^>]*><\/iframe>)/s,
+        // Detecta shortcodes, iframes y enlaces sueltos de Spotify (https://open.spotify.com/...)
+        pattern: /(?:\{\{<\s*spotify\s+["']?([^"'\s>]+)["']?\s*>\}\}|https?:\/\/open\.spotify\.com\/(?:intl-[a-z]+\/)?(album|track|playlist)\/([a-zA-Z0-9]+))/s,
         fromBlock: function(match) {
-          var val = match[1] || match[2] || "";
-          if (val && !val.startsWith("http")) {
-            val = "https://open.spotify.com/" + val;
+          if (match[1]) {
+            return { url: match[1] };
           }
-          return { url: val.replace(/[\r\n\s]+/g, "") };
+          if (match[2] && match[3]) {
+            return { url: "https://open.spotify.com/" + match[2] + "/" + match[3] };
+          }
+          return { url: "" };
         },
         toBlock: function(obj) {
           if (!obj.url) return "";
-          var clean = obj.url.replace(/[\r\n\s]+/g, "").split('?')[0];
-          return '{{< spotify "' + clean + '" >}}';
+          var cleanUrl = obj.url.trim().split('?')[0];
+          return '{{< spotify "' + cleanUrl + '" >}}';
         },
         toPreview: function(obj) {
-          if (!obj.url) return '<div style="padding: 10px; color: #888;">Introduce una URL de Spotify...</div>';
-          var cleanUrl = obj.url.replace(/[\r\n\s]+/g, "")
+          if (!obj || !obj.url) {
+            return '<div style="padding:12px; background:#222; color:#fff; border-radius:8px; text-align:center;">🎵 Spotify (Introduce URL)</div>';
+          }
+          var cleanUrl = obj.url.trim()
             .replace("open.spotify.com/", "open.spotify.com/embed/")
             .replace(/\/embed\/intl-[a-z]+\//, "/embed/")
             .split('?')[0];
 
-          return '<div style="padding: 10px; background: #121212; border-radius: 12px; text-align: center;">' +
-                   '<iframe src="' + cleanUrl + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media" style="border-radius: 8px;"></iframe>' +
-                 '</div>';
+          return (
+            '<div style="padding:10px; background:#121212; border-radius:12px; margin:10px 0;">' +
+              '<iframe src="' + cleanUrl + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media" style="border-radius:8px;"></iframe>' +
+            '</div>'
+          );
         }
       });
     </script>
