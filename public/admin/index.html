@@ -7,11 +7,21 @@
     <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
   </head>
   <body>
-    <!-- Carga de Decap CMS -->
+    <!-- Carga del núcleo de Decap CMS -->
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
     <script>
-      // 1. WIDGET SPOTIFY TIPO WORDPRESS
+      // Helper para limpiar cualquier URL de Spotify (quita saltos de línea, intl-es y ?si=)
+      function cleanSpotifyUrl(rawUrl) {
+        if (!rawUrl) return "";
+        var singleLine = rawUrl.replace(/[\r\n]+/g, "").trim();
+        var noParams = singleLine.split('?')[0];
+        return noParams
+          .replace("open.spotify.com/", "open.spotify.com/embed/")
+          .replace(/\/embed\/intl-[a-z]+\//, "/embed/");
+      }
+
+      // 1. WIDGET SPOTIFY
       CMS.registerEditorComponent({
         id: "spotify",
         label: "🎵 Spotify",
@@ -23,33 +33,30 @@
             hint: "Pega la URL de la canción, álbum o playlist"
           }
         ],
-        // Pattern ultratolertante: detecta shortcode {{< spotify "..." >}}, {{<spotify "...">}}, e iframes
-        pattern: /\{\{<\s*spotify\s+"?([^"\s>]+)"?\s*>\}\}/,
+        // Soporta saltos de línea (s), espacios y shortcodes de Hugo/Decap
+        pattern: /^\{\{<\s*spotify\s+"([^"]+)"\s*>\}\}$/s,
         fromBlock: function(match) {
           return {
-            url: match[1] || ""
+            url: match[1] ? match[1].replace(/[\r\n]+/g, "").trim() : ""
           };
         },
         toBlock: function(obj) {
           if (!obj.url) return "";
-          return '{{< spotify "' + obj.url.trim() + '" >}}';
+          // Guardamos la URL limpia en una sola línea para no romper el Markdown
+          var clean = obj.url.replace(/[\r\n]+/g, "").trim();
+          return '{{< spotify "' + clean + '" >}}';
         },
         toPreview: function(obj) {
           if (!obj.url) return '<div style="padding: 10px; color: #888;">Introduce una URL de Spotify...</div>';
-          
-          // Convierte cualquier enlace a la versión Embed limpia
-          var cleanUrl = obj.url.trim()
-            .replace("open.spotify.com/", "open.spotify.com/embed/")
-            .replace(/\/embed\/intl-[a-z]+\//, "/embed/")
-            .split('?')[0]; // Elimina parámetros de seguimiento como ?si=...
+          var embedUrl = cleanSpotifyUrl(obj.url);
 
           return '<div style="padding: 10px; background: #121212; border-radius: 12px; text-align: center;">' +
-                   '<iframe src="' + cleanUrl + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media" style="border-radius: 8px;"></iframe>' +
+                   '<iframe src="' + embedUrl + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media" style="border-radius: 8px;"></iframe>' +
                  '</div>';
         }
       });
 
-      // 2. WIDGET INSTAGRAM TIPO WORDPRESS
+      // 2. WIDGET INSTAGRAM
       CMS.registerEditorComponent({
         id: "instagram",
         label: "📸 Instagram",
@@ -61,26 +68,27 @@
             hint: "Ejemplo: https://www.instagram.com/p/C_EXAMPLE/"
           }
         ],
-        pattern: /\{\{<\s*instagram\s+"?([^"\s>]+)"?\s*>\}\}/,
+        pattern: /^\{\{<\s*instagram\s+"([^"]+)"\s*>\}\}$/s,
         fromBlock: function(match) {
           return {
-            url: match[1] || ""
+            url: match[1] ? match[1].replace(/[\r\n]+/g, "").trim() : ""
           };
         },
         toBlock: function(obj) {
           if (!obj.url) return "";
-          return '{{< instagram "' + obj.url.trim() + '" >}}';
+          var clean = obj.url.replace(/[\r\n]+/g, "").trim();
+          return '{{< instagram "' + clean + '" >}}';
         },
         toPreview: function(obj) {
           if (!obj.url) return '<div style="padding: 10px; color: #888;">Introduce una URL de Instagram...</div>';
-          var cleanUrl = obj.url.trim().split('?')[0].replace(/\/$/, "");
+          var cleanUrl = obj.url.replace(/[\r\n]+/g, "").trim().split('?')[0].replace(/\/$/, "");
           return '<div style="display: flex; justify-content: center; background: #fafafa; padding: 12px; border: 1px solid #e0e0e0; border-radius: 12px;">' +
                    '<iframe src="' + cleanUrl + '/embed" width="400" height="480" frameborder="0" scrolling="no"></iframe>' +
                  '</div>';
         }
       });
 
-      // 3. WIDGET GALERÍA TIPO WORDPRESS
+      // 3. WIDGET GALERÍA
       CMS.registerEditorComponent({
         id: "gallery",
         label: "🖼️ Galería de Imágenes",
@@ -92,7 +100,7 @@
             field: { label: "Imagen", name: "image", widget: "image" }
           }
         ],
-        pattern: /^<div class="cms-gallery">(.*?)<\/div>$/ms,
+        pattern: /^<div class="cms-gallery">(.*?)<\/div>$/s,
         fromBlock: function(match) {
           return { images: [] };
         },
