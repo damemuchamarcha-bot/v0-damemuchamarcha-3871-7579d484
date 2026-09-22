@@ -7,21 +7,10 @@
     <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
   </head>
   <body>
-    <!-- Carga del núcleo de Decap CMS -->
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
     <script>
-      // Función para limpiar URLs de Spotify (elimina saltos de línea, intl-es y params ?si=)
-      function sanitizeSpotifyUrl(url) {
-        if (!url) return "";
-        var clean = url.replace(/[\r\n\s]+/g, ""); // Quita saltos de línea y espacios
-        clean = clean.split('?')[0]; // Elimina rastreadores tipo ?si=...
-        return clean
-          .replace("open.spotify.com/", "open.spotify.com/embed/")
-          .replace(/\/embed\/intl-[a-z]+\//, "/embed/");
-      }
-
-      // 1. WIDGET SPOTIFY BLINDADO
+      // 1. WIDGET SPOTIFY (Soporta iframe y shortcode)
       CMS.registerEditorComponent({
         id: "spotify",
         label: "🎵 Spotify",
@@ -30,93 +19,33 @@
             name: "url",
             label: "Enlace de Spotify",
             widget: "string",
-            hint: "Pega aquí cualquier URL de Spotify"
+            hint: "Pega la URL del álbum, canción o playlist"
           }
         ],
-        // RegExp con bandera 's' para atrapar contenido multilínea sin romper el componente
-        pattern: /^\{\{<\s*spotify\s+"([\s\S]+?)"\s*>\}\}$/s,
+        // Captura tanto shortcodes como iframes previa o posteriormente insertados
+        pattern: /(?:\{\{<\s*spotify\s+"?([^"\s>]+)"?\s*>\}\}|<iframe[^>]*src="https:\/\/open\.spotify\.com\/embed\/([^"?]+)[^"]*"[^>]*><\/iframe>)/s,
         fromBlock: function(match) {
-          return {
-            url: match[1] ? match[1].replace(/[\r\n\s]+/g, "") : ""
-          };
-        },
-        toBlock: function(obj) {
-          if (!obj.url) return "";
-          // Al guardar, se asegura de formatear la URL en una sola línea limpia
-          var cleanUrl = obj.url.replace(/[\r\n\s]+/g, "").split('?')[0];
-          return '{{< spotify "' + cleanUrl + '" >}}';
-        },
-        toPreview: function(obj) {
-          if (!obj.url) return '<div style="padding: 10px; color: #888;">Introduce una URL de Spotify...</div>';
-          var embedUrl = sanitizeSpotifyUrl(obj.url);
-
-          return '<div style="padding: 10px; background: #121212; border-radius: 12px; text-align: center;">' +
-                   '<iframe src="' + embedUrl + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media" style="border-radius: 8px;"></iframe>' +
-                 '</div>';
-        }
-      });
-
-      // 2. WIDGET INSTAGRAM BLINDADO
-      CMS.registerEditorComponent({
-        id: "instagram",
-        label: "📸 Instagram",
-        fields: [
-          {
-            name: "url",
-            label: "URL del Post / Reel",
-            widget: "string",
-            hint: "Ejemplo: https://www.instagram.com/p/C_EXAMPLE/"
+          var val = match[1] || match[2] || "";
+          if (val && !val.startsWith("http")) {
+            val = "https://open.spotify.com/" + val;
           }
-        ],
-        pattern: /^\{\{<\s*instagram\s+"([\s\S]+?)"\s*>\}\}$/s,
-        fromBlock: function(match) {
-          return {
-            url: match[1] ? match[1].replace(/[\r\n\s]+/g, "") : ""
-          };
+          return { url: val.replace(/[\r\n\s]+/g, "") };
         },
         toBlock: function(obj) {
           if (!obj.url) return "";
           var clean = obj.url.replace(/[\r\n\s]+/g, "").split('?')[0];
-          return '{{< instagram "' + clean + '" >}}';
+          return '{{< spotify "' + clean + '" >}}';
         },
         toPreview: function(obj) {
-          if (!obj.url) return '<div style="padding: 10px; color: #888;">Introduce una URL de Instagram...</div>';
-          var cleanUrl = obj.url.replace(/[\r\n\s]+/g, "").split('?')[0].replace(/\/$/, "");
-          return '<div style="display: flex; justify-content: center; background: #fafafa; padding: 12px; border: 1px solid #e0e0e0; border-radius: 12px;">' +
-                   '<iframe src="' + cleanUrl + '/embed" width="400" height="480" frameborder="0" scrolling="no"></iframe>' +
-                 '</div>';
-        }
-      });
+          if (!obj.url) return '<div style="padding: 10px; color: #888;">Introduce una URL de Spotify...</div>';
+          var cleanUrl = obj.url.replace(/[\r\n\s]+/g, "")
+            .replace("open.spotify.com/", "open.spotify.com/embed/")
+            .replace(/\/embed\/intl-[a-z]+\//, "/embed/")
+            .split('?')[0];
 
-      // 3. WIDGET GALERÍA
-      CMS.registerEditorComponent({
-        id: "gallery",
-        label: "🖼️ Galería de Imágenes",
-        fields: [
-          {
-            name: "images",
-            label: "Imágenes de la Galería",
-            widget: "list",
-            field: { label: "Imagen", name: "image", widget: "image" }
-          }
-        ],
-        pattern: /^<div class="cms-gallery">(.*?)<\/div>$/s,
-        fromBlock: function(match) {
-          return { images: [] };
-        },
-        toBlock: function(obj) {
-          if (!obj.images || !obj.images.length) return "";
-          var imgTags = obj.images.map(function(img) {
-            return '<img src="' + img + '" alt="Imagen de galería" />';
-          }).join('\n  ');
-          return '<div class="cms-gallery">\n  ' + imgTags + '\n</div>';
-        },
-        toPreview: function(obj) {
-          if (!obj.images || !obj.images.length) return '<div style="padding: 10px; color: #888;">Selecciona imágenes para la galería...</div>';
-          var imgTags = obj.images.map(function(img) {
-            return '<img src="' + img + '" style="width: 120px; height: 120px; object-fit: cover; margin: 4px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);" />';
-          }).join('');
-          return '<div style="display: flex; flex-wrap: wrap; gap: 8px; background: #f8f9fa; padding: 12px; border-radius: 12px; border: 1px dashed #ccc;">' + imgTags + '</div>';
+          return '<div style="padding: 10px; background: #121212; border-radius: 12px; text-align: center;">' +
+                   '<iframe src="' + cleanUrl + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media" style="border-radius: 8px;"></iframe>' +
+                 '</div>';
         }
       });
     </script>
