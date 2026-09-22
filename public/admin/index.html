@@ -7,30 +7,28 @@
     <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
   </head>
   <body>
-    <!-- Carga del núcleo de Decap CMS -->
+    <!-- Carga de Decap CMS -->
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
     <script>
-      // 1. WIDGET SPOTIFY
+      // 1. WIDGET SPOTIFY TIPO WORDPRESS
       CMS.registerEditorComponent({
         id: "spotify",
         label: "🎵 Spotify",
         fields: [
           {
             name: "url",
-            label: "Enlace o URL de Spotify",
+            label: "Enlace de Spotify",
             widget: "string",
-            hint: "Pega el enlace de la canción, álbum o playlist"
+            hint: "Pega la URL de la canción, álbum o playlist"
           }
         ],
-        // Soporta formatos {{< spotify "url" >}}, iframes o links directos con parámetros ?si=
-        pattern: /^(?:\{\{<\s*spotify\s+"?([^"\s>]+)"?\s*>\}\}|<iframe[^>]*src="https:\/\/open\.spotify\.com\/embed\/([^"?]+)[^"]*"[^>]*><\/iframe>)/m,
+        // Pattern ultratolertante: detecta shortcode {{< spotify "..." >}}, {{<spotify "...">}}, e iframes
+        pattern: /\{\{<\s*spotify\s+"?([^"\s>]+)"?\s*>\}\}/,
         fromBlock: function(match) {
-          var matchedUrl = match[1] || match[2] || "";
-          if (matchedUrl && !matchedUrl.startsWith("http")) {
-            matchedUrl = "https://open.spotify.com/" + matchedUrl;
-          }
-          return { url: matchedUrl };
+          return {
+            url: match[1] || ""
+          };
         },
         toBlock: function(obj) {
           if (!obj.url) return "";
@@ -38,9 +36,12 @@
         },
         toPreview: function(obj) {
           if (!obj.url) return '<div style="padding: 10px; color: #888;">Introduce una URL de Spotify...</div>';
+          
+          // Convierte cualquier enlace a la versión Embed limpia
           var cleanUrl = obj.url.trim()
             .replace("open.spotify.com/", "open.spotify.com/embed/")
-            .replace(/\/embed\/intl-[a-z]+\//, "/embed/");
+            .replace(/\/embed\/intl-[a-z]+\//, "/embed/")
+            .split('?')[0]; // Elimina parámetros de seguimiento como ?si=...
 
           return '<div style="padding: 10px; background: #121212; border-radius: 12px; text-align: center;">' +
                    '<iframe src="' + cleanUrl + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media" style="border-radius: 8px;"></iframe>' +
@@ -48,7 +49,7 @@
         }
       });
 
-      // 2. WIDGET INSTAGRAM
+      // 2. WIDGET INSTAGRAM TIPO WORDPRESS
       CMS.registerEditorComponent({
         id: "instagram",
         label: "📸 Instagram",
@@ -60,10 +61,11 @@
             hint: "Ejemplo: https://www.instagram.com/p/C_EXAMPLE/"
           }
         ],
-        pattern: /^(?:\{\{<\s*instagram\s+"?([^"\s>]+)"?\s*>\}\}|https?:\/\/(?:www\.)?instagram\.com\/(?:p|reel)\/([^/?#&]+))/m,
+        pattern: /\{\{<\s*instagram\s+"?([^"\s>]+)"?\s*>\}\}/,
         fromBlock: function(match) {
-          var matchedUrl = match[1] || match[0] || "";
-          return { url: matchedUrl };
+          return {
+            url: match[1] || ""
+          };
         },
         toBlock: function(obj) {
           if (!obj.url) return "";
@@ -78,7 +80,7 @@
         }
       });
 
-      // 3. WIDGET GALERÍA DE IMÁGENES
+      // 3. WIDGET GALERÍA TIPO WORDPRESS
       CMS.registerEditorComponent({
         id: "gallery",
         label: "🖼️ Galería de Imágenes",
