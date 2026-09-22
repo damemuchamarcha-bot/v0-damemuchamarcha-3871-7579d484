@@ -32,8 +32,6 @@ Parte de la responsabilidad del mundo sonoro de este disco recae en los producto
 
 El sonido de Duckwrth ha evolucionado a algo más punk, rock-alt, indie y ha perdido un poco sus inicios con el rap. Aunque para nosotros es como si cogiéramos una máquina del tiempo al pasado y volviéramos a vivir un poco el disco de ***THE FALLING MAN* y *SuperGood***; son como si esos dos discos se hubieran fusionado con ***All American Fuckboy***, pero sin el elemento del rap.
 
-{{< spotify "https://open.spotify.com/intl-es/album/5LYjokc0bkRmpo3zh43e3s" >}}
-
 Visualmente, el artista tiene detalles hasta en la ropa que viste, siendo el que idea todo su imaginario y moda, apoderándose de la estrella como símbolo; lo podemos ver, por ejemplo, en el maquillaje
 
 Este disco ha tenido 3 videoclips. En “I Wanna Be Your Dog Again” aparece caracterizado como un perro y en “Sweet Fuego”, como canta en una casa en llamas.
