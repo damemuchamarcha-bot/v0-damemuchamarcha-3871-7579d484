@@ -17,10 +17,11 @@
           {
             name: "url",
             label: "Enlace de Spotify",
-            widget: "string"
+            widget: "string",
+            hint: "Pega el enlace de la canción, álbum o playlist"
           }
         ],
-        // Detecta shortcodes, iframes y enlaces sueltos de Spotify (https://open.spotify.com/...)
+        // Detecta shortcodes, iframes y URLs directas de Spotify
         pattern: /(?:\{\{<\s*spotify\s+["']?([^"'\s>]+)["']?\s*>\}\}|https?:\/\/open\.spotify\.com\/(?:intl-[a-z]+\/)?(album|track|playlist)\/([a-zA-Z0-9]+))/s,
         fromBlock: function(match) {
           if (match[1]) {
@@ -32,7 +33,7 @@
           return { url: "" };
         },
         toBlock: function(obj) {
-          if (!obj.url) return "";
+          if (!obj || !obj.url) return "";
           var cleanUrl = obj.url.trim().split('?')[0];
           return '{{< spotify "' + cleanUrl + '" >}}';
         },
@@ -40,14 +41,18 @@
           if (!obj || !obj.url) {
             return '<div style="padding:12px; background:#222; color:#fff; border-radius:8px; text-align:center;">🎵 Spotify (Introduce URL)</div>';
           }
-          var cleanUrl = obj.url.trim()
-            .replace("open.spotify.com/", "open.spotify.com/embed/")
-            .replace(/\/embed\/intl-[a-z]+\//, "/embed/")
-            .split('?')[0];
+          
+          var url = obj.url.trim().split('?')[0];
+          
+          // Limpia prefijos como intl-es/ para formatear la URL del embed correctamente
+          url = url.replace(/open\.spotify\.com\/(?:intl-[a-z]+\/)?/, "open.spotify.com/");
+          if (!url.includes("/embed/")) {
+            url = url.replace("open.spotify.com/", "open.spotify.com/embed/");
+          }
 
           return (
             '<div style="padding:10px; background:#121212; border-radius:12px; margin:10px 0;">' +
-              '<iframe src="' + cleanUrl + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media" style="border-radius:8px;"></iframe>' +
+              '<iframe src="' + url + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media" style="border-radius:8px;"></iframe>' +
             '</div>'
           );
         }
