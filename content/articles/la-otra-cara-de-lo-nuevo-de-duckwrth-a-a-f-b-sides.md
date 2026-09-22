@@ -28,7 +28,7 @@ En un vídeo publicado en TikTok, Duckwrth anunció que este nuevo álbum funcio
 
 Canciones de desamor y con letras curiosas mantienen la energía del artista al cien por cien.
 
-![Portada del álbum A.A.F.B-Sides](/uploads/duckwrth-cover.png)
+![Portada del álbum A.A.F.B-Sides](/uploads/duckwrth-cover.png "Portada del álbum A.A.F.B-Sides")
 
 Parte de la responsabilidad del mundo sonoro de este disco recae en los productores, como el propio artista, Pera, Wave IQ, Blake Straus, The Pocket Queen, Wes Singerman, Two Fresh, Max Volante, Chassidy Joiner, Jessica Hampton y AlexKeyz, entre otros.
 
