@@ -7,12 +7,11 @@
     <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
   </head>
   <body>
-    <!-- Carga del núcleo de Decap CMS -->
+    <!-- Carga de Decap CMS -->
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
-    <!-- Componentes de Editor estilo WordPress -->
     <script>
-      // 1. WIDGET SPOTIFY TIPO WORDPRESS
+      // 1. WIDGET SPOTIFY REAL (HTML Directo + Previsualización estilo WordPress)
       CMS.registerEditorComponent({
         id: "spotify",
         label: "🎵 Spotify",
@@ -21,34 +20,38 @@
             name: "url",
             label: "Enlace de Spotify",
             widget: "string",
-            hint: "Pega la URL de la canción, álbum o playlist"
+            hint: "Pega la URL de la canción, álbum o playlist (ej: https://open.spotify.com/album/...)"
           }
         ],
-        pattern: /^(?:\{\{<\s*spotify\s+"([^"]+)"\s*>\}\}|<iframe[^>]*src="https:\/\/open\.spotify\.com\/embed\/([^"]+)"[^>]*><\/iframe>)/,
+        // Expresión regular que detecta CUALQUIER iframe de Spotify cargado en el documento
+        pattern: /^<iframe[^>]*src="https:\/\/open\.spotify\.com\/embed\/([^"]+)"[^>]*><\/iframe>$/,
         fromBlock: function(match) {
-          if (match[1]) return { url: match[1] };
-          if (match[2]) return { url: "https://open.spotify.com/" + match[2] };
-          return { url: "" };
+          return {
+            url: "https://open.spotify.com/" + match[1]
+          };
         },
         toBlock: function(obj) {
           if (!obj.url) return "";
-          return '{{< spotify "' + obj.url.trim() + '" >}}';
+          // Limpia /intl-es/, parámetros ?si= y crea el iframe final
+          var cleanUrl = obj.url.trim()
+            .replace("open.spotify.com/", "open.spotify.com/embed/")
+            .replace(/\/embed\/intl-[a-z]+\//, "/embed/");
+          
+          return '<iframe src="' + cleanUrl + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>';
         },
         toPreview: function(obj) {
           if (!obj.url) return '<div style="padding: 10px; color: #888;">Introduce una URL de Spotify...</div>';
-          
-          // Limpia /intl-es/ y convierte a URL de embed limpia
           var cleanUrl = obj.url.trim()
             .replace("open.spotify.com/", "open.spotify.com/embed/")
             .replace(/\/embed\/intl-[a-z]+\//, "/embed/");
 
-          return '<div style="padding: 10px; background: #121212; border-radius: 12px; text-align: center;">' +
+          return '<div style="padding: 8px; background: #121212; border-radius: 12px;">' +
                    '<iframe src="' + cleanUrl + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media" style="border-radius: 8px;"></iframe>' +
                  '</div>';
         }
       });
 
-      // 2. WIDGET INSTAGRAM TIPO WORDPRESS
+      // 2. WIDGET INSTAGRAM REAL
       CMS.registerEditorComponent({
         id: "instagram",
         label: "📸 Instagram",
@@ -60,13 +63,14 @@
             hint: "Ejemplo: https://www.instagram.com/p/C_EXAMPLE/"
           }
         ],
-        pattern: /^(?:\{\{<\s*instagram\s+"([^"]+)"\s*>\}\}|https?:\/\/(?:www\.)?instagram\.com\/(?:p|reel)\/([^/?#&]+))/,
+        pattern: /^<iframe[^>]*src="https:\/\/www\.instagram\.com\/(?:p|reel)\/([^/]+)\/embed"[^>]*><\/iframe>$/,
         fromBlock: function(match) {
-          return { url: match[1] || match[0] };
+          return { url: "https://www.instagram.com/p/" + match[1] + "/" };
         },
         toBlock: function(obj) {
           if (!obj.url) return "";
-          return '{{< instagram "' + obj.url.trim() + '" >}}';
+          var cleanUrl = obj.url.trim().split('?')[0].replace(/\/$/, "");
+          return '<iframe src="' + cleanUrl + '/embed" width="400" height="480" frameborder="0" scrolling="no" allowtransparency="true"></iframe>';
         },
         toPreview: function(obj) {
           if (!obj.url) return '<div style="padding: 10px; color: #888;">Introduce una URL de Instagram...</div>';
@@ -77,7 +81,7 @@
         }
       });
 
-      // 3. WIDGET GALERÍA TIPO WORDPRESS
+      // 3. WIDGET GALERÍA REAL
       CMS.registerEditorComponent({
         id: "gallery",
         label: "🖼️ Galería de Imágenes",
