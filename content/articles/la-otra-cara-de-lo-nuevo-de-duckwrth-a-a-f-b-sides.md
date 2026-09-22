@@ -34,6 +34,8 @@ El sonido de Duckwrth ha evolucionado a algo más punk, rock-alt, indie y ha per
 
 Visualmente, el artista tiene detalles hasta en la ropa que viste, siendo el que idea todo su imaginario y moda, apoderándose de la estrella como símbolo; lo podemos ver, por ejemplo, en el maquillaje
 
+{{< spotify "https://open.spotify.com/album/5LYjokc0bkRmpo3zh43e3s" >}}
+
 Este disco ha tenido 3 videoclips. En “I Wanna Be Your Dog Again” aparece caracterizado como un perro y en “Sweet Fuego”, como canta en una casa en llamas.
 
 {{< spotify "https://open.spotify.com/album/5LYjokc0bkRmpo3zh43e3s" >}}
