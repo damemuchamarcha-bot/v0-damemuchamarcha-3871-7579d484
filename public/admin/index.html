@@ -1,9 +1,16 @@
 <!doctype html>
-html>
+<html>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Content Manager — Dame Marcha</title>
+  
+  <!-- Configuración de ratios y recortador para Uploadcare -->
+  <script>
+    window.UPLOADCARE_CROP = "21:9, 16:9, 4:3, 1:1, free";
+    window.UPLOADCARE_MANUAL_CROP = true;
+  </script>
+
   <!-- Autenticación con Netlify Identity / GitHub -->
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
