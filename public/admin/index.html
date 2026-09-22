@@ -7,24 +7,23 @@
     <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
   </head>
   <body>
-    <!-- Script principal de Decap CMS -->
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
-    <!-- Registro de Widgets / Editor Components -->
     <script>
-      // 1. Componente para Spotify
+      // 1. WIDGET SPOTIFY TIPO WORDPRESS
       CMS.registerEditorComponent({
         id: "spotify",
-        label: "Spotify Embed",
+        label: "🎵 Spotify",
         fields: [
           {
             name: "url",
-            label: "Enlace o URL de Spotify",
+            label: "Enlace de Spotify",
             widget: "string",
-            hint: "Ejemplo: https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT"
+            hint: "Pega el enlace de la canción, álbum o playlist"
           }
         ],
-        pattern: /^<iframe src="https:\/\/open\.spotify\.com\/embed\/(track|album|playlist)\/([a-zA-A0-9]+)".*><\/iframe>$/,
+        // Soporta URLs estándar e intl-es/intl-pt/etc.
+        pattern: /^<iframe src="https:\/\/open\.spotify\.com\/embed\/(?:intl-[a-z]+\/)?(track|album|playlist)\/([a-zA-Z0-9]+).*"><\/iframe>$/,
         fromBlock: function(match) {
           return {
             url: "https://open.spotify.com/" + match[1] + "/" + match[2]
@@ -32,33 +31,31 @@
         },
         toBlock: function(obj) {
           if (!obj.url) return "";
-          var embedUrl = obj.url.replace("open.spotify.com/", "open.spotify.com/embed/");
-          return '<iframe src="' + embedUrl + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>';
+          var cleanUrl = obj.url.replace(/open\.spotify\.com\/(?:intl-[a-z]+\/)?/, "open.spotify.com/embed/");
+          return '<iframe src="' + cleanUrl + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>';
         },
         toPreview: function(obj) {
           if (!obj.url) return "";
-          var embedUrl = obj.url.replace("open.spotify.com/", "open.spotify.com/embed/");
-          return '<iframe src="' + embedUrl + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>';
+          var cleanUrl = obj.url.replace(/open\.spotify\.com\/(?:intl-[a-z]+\/)?/, "open.spotify.com/embed/");
+          return '<div style="padding: 10px; background: #121212; border-radius: 8px;"><iframe src="' + cleanUrl + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe></div>';
         }
       });
 
-      // 2. Componente para Instagram
+      // 2. WIDGET INSTAGRAM TIPO WORDPRESS
       CMS.registerEditorComponent({
         id: "instagram",
-        label: "Instagram Post",
+        label: "📸 Instagram",
         fields: [
           {
             name: "url",
-            label: "URL de la publicación de Instagram",
+            label: "URL del Post / Reel",
             widget: "string",
             hint: "Ejemplo: https://www.instagram.com/p/C_EXAMPLE/"
           }
         ],
         pattern: /^https?:\/\/(www\.)?instagram\.com\/(p|reel)\/([^/?#&]+)/,
         fromBlock: function(match) {
-          return {
-            url: match[0]
-          };
+          return { url: match[0] };
         },
         toBlock: function(obj) {
           if (!obj.url) return "";
@@ -68,14 +65,14 @@
         toPreview: function(obj) {
           if (!obj.url) return "";
           var cleanUrl = obj.url.split('?')[0].replace(/\/$/, "");
-          return '<iframe src="' + cleanUrl + '/embed" width="400" height="480" frameborder="0" scrolling="no" allowtransparency="true"></iframe>';
+          return '<div style="display: flex; justify-content: center; background: #fafafa; padding: 10px; border: 1px solid #ddd; border-radius: 8px;"><iframe src="' + cleanUrl + '/embed" width="400" height="480" frameborder="0" scrolling="no"></iframe></div>';
         }
       });
 
-      // 3. Componente para Galería de Imágenes
+      // 3. WIDGET GALERÍA TIPO WORDPRESS
       CMS.registerEditorComponent({
         id: "gallery",
-        label: "Galería de Imágenes",
+        label: "🖼️ Galería de Imágenes",
         fields: [
           {
             name: "images",
@@ -86,9 +83,7 @@
         ],
         pattern: /^<div class="cms-gallery">(.*?)<\/div>$/s,
         fromBlock: function(match) {
-          return {
-            images: []
-          };
+          return { images: [] };
         },
         toBlock: function(obj) {
           if (!obj.images || !obj.images.length) return "";
@@ -100,9 +95,9 @@
         toPreview: function(obj) {
           if (!obj.images || !obj.images.length) return "";
           var imgTags = obj.images.map(function(img) {
-            return '<img src="' + img + '" style="width: 100px; height: 100px; object-fit: cover; margin: 4px; border-radius: 4px;" />';
+            return '<img src="' + img + '" style="width: 120px; height: 120px; object-fit: cover; margin: 4px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" />';
           }).join('');
-          return '<div style="display: flex; flex-wrap: wrap;">' + imgTags + '</div>';
+          return '<div style="display: flex; flex-wrap: wrap; gap: 8px; background: #f0f0f0; padding: 12px; border-radius: 8px;">' + imgTags + '</div>';
         }
       });
     </script>
