@@ -28,8 +28,6 @@ En un vídeo publicado en TikTok, Duckwrth anunció que este nuevo álbum funcio
 
 Canciones de desamor y con letras curiosas mantienen la energía del artista al cien por cien.
 
-![Portada del álbum A.A.F.B-Sides](https://1s4oyld5dc.ucarecd.net/d02c0830-81d1-478f-bde6-75bee62ff166/-/crop/715x714/134,27/-/preview/ "Portada del álbum A.A.F.B-Sides")
-
 Parte de la responsabilidad del mundo sonoro de este disco recae en los productores, como el propio artista, Pera, Wave IQ, Blake Straus, The Pocket Queen, Wes Singerman, Two Fresh, Max Volante, Chassidy Joiner, Jessica Hampton y AlexKeyz, entre otros.
 
 El sonido de Duckwrth ha evolucionado a algo más punk, rock-alt, indie y ha perdido un poco sus inicios con el rap. Aunque para nosotros es como si cogiéramos una máquina del tiempo al pasado y volviéramos a vivir un poco el disco de ***THE FALLING MAN* y *SuperGood***; son como si esos dos discos se hubieran fusionado con ***All American Fuckboy***, pero sin el elemento del rap.
@@ -41,3 +39,5 @@ Este disco ha tenido 3 videoclips. En “I Wanna Be Your Dog Again” aparece ca
 Duckwrth ha decidido hacernos descubrir el otro lado de la cinta y darnos otra versión de un disco. Ocho canciones después, el álbum sigue explorando distintas atmósferas y subgéneros con total libertad.
 
 Queremos destacar la nominación en la 67.ª edición de los Premios Grammy en la categoría de Best Immersive Audio Album por su aclamado proyecto conceptual *All American F—Boy*. Aunque el trofeo y el reconocimiento técnico de esta categoría corresponden directamente al ingeniero de mezcla inmersiva Andrew Law por adaptar las pistas originales al formato Dolby Atmos, Duckwrth celebró este logro como una auténtica manifestación, ya que durante las sesiones de grabación en el estudio solía bromear con sus amigos tocando un "botón invisible de los Grammy" cada vez que finalizaban una canción.
+
+https://open.spotify.com/intl-es/album/5LYjokc0bkRmpo3zh43e3s?si=L4sJZ44QScWB97eXy_ImmA
