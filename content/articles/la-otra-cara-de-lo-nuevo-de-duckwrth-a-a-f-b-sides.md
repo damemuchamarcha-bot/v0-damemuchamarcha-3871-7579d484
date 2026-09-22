@@ -36,12 +36,10 @@ Visualmente, el artista tiene detalles hasta en la ropa que viste, siendo el que
 
 Este disco ha tenido 3 videoclips. En “I Wanna Be Your Dog Again” aparece caracterizado como un perro y en “Sweet Fuego”, como canta en una casa en llamas.
 
-[https://open.spotify.com/intl-es/album/5LYjokc0bkRmpo3zh43e3s?si=_ea3rqLQT5uf0cpiKmfOSw](https://open.spotify.com/intl-es/album/5LYjokc0bkRmpo3zh43e3s?si=_ea3rqLQT5uf0cpiKmfOSw)
+<iframe src="https://open.spotify.com/embed/album/5LYjokc0bkRmpo3zh43e3s?si=_ea3rqLQT5uf0cpiKmfOSw" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+
+
 
 Duckwrth ha decidido hacernos descubrir el otro lado de la cinta y darnos otra versión de un disco. Ocho canciones después, el álbum sigue explorando distintas atmósferas y subgéneros con total libertad.
 
 Queremos destacar la nominación en la 67.ª edición de los Premios Grammy en la categoría de Best Immersive Audio Album por su aclamado proyecto conceptual *All American F—Boy*. Aunque el trofeo y el reconocimiento técnico de esta categoría corresponden directamente al ingeniero de mezcla inmersiva Andrew Law por adaptar las pistas originales al formato Dolby Atmos, Duckwrth celebró este logro como una auténtica manifestación, ya que durante las sesiones de grabación en el estudio solía bromear con sus amigos tocando un "botón invisible de los Grammy" cada vez que finalizaban una canción.
-
-{{< spotify "https://open.spotify.com/intl-es/album/5LYjokc0bkRmpo3zh43e3s?si=_ea3rqLQT5uf0cpiKmfOSw" >}}
-
-{{< spotify "https://open.spotify.com/intl-es/album/5LYjokc0bkRmpo3zh43e3s?si=_ea3rqLQT5uf0cpiKmfOSw" >}}
