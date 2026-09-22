@@ -3,6 +3,8 @@ backend:
   repo: damemuchamarcha-bot/web1
   branch: main
   base_url: https://decap-cms-oauth-orcin.vercel.app
+  auth_endpoint: auth
+  
 
 media_library:
   name: uploadcare
