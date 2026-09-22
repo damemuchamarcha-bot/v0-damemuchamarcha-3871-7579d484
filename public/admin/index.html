@@ -7,37 +7,34 @@
     <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
   </head>
   <body>
-    <!-- Carga de Decap CMS -->
+    <!-- Carga del núcleo de Decap CMS -->
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
     <script>
-      // 1. WIDGET SPOTIFY REAL (HTML Directo + Previsualización estilo WordPress)
+      // 1. WIDGET SPOTIFY
       CMS.registerEditorComponent({
         id: "spotify",
         label: "🎵 Spotify",
         fields: [
           {
             name: "url",
-            label: "Enlace de Spotify",
+            label: "Enlace o URL de Spotify",
             widget: "string",
-            hint: "Pega la URL de la canción, álbum o playlist (ej: https://open.spotify.com/album/...)"
+            hint: "Pega el enlace de la canción, álbum o playlist"
           }
         ],
-        // Expresión regular que detecta CUALQUIER iframe de Spotify cargado en el documento
-        pattern: /^<iframe[^>]*src="https:\/\/open\.spotify\.com\/embed\/([^"]+)"[^>]*><\/iframe>$/,
+        // Soporta formatos {{< spotify "url" >}}, iframes o links directos con parámetros ?si=
+        pattern: /^(?:\{\{<\s*spotify\s+"?([^"\s>]+)"?\s*>\}\}|<iframe[^>]*src="https:\/\/open\.spotify\.com\/embed\/([^"?]+)[^"]*"[^>]*><\/iframe>)/m,
         fromBlock: function(match) {
-          return {
-            url: "https://open.spotify.com/" + match[1]
-          };
+          var matchedUrl = match[1] || match[2] || "";
+          if (matchedUrl && !matchedUrl.startsWith("http")) {
+            matchedUrl = "https://open.spotify.com/" + matchedUrl;
+          }
+          return { url: matchedUrl };
         },
         toBlock: function(obj) {
           if (!obj.url) return "";
-          // Limpia /intl-es/, parámetros ?si= y crea el iframe final
-          var cleanUrl = obj.url.trim()
-            .replace("open.spotify.com/", "open.spotify.com/embed/")
-            .replace(/\/embed\/intl-[a-z]+\//, "/embed/");
-          
-          return '<iframe src="' + cleanUrl + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>';
+          return '{{< spotify "' + obj.url.trim() + '" >}}';
         },
         toPreview: function(obj) {
           if (!obj.url) return '<div style="padding: 10px; color: #888;">Introduce una URL de Spotify...</div>';
@@ -45,13 +42,13 @@
             .replace("open.spotify.com/", "open.spotify.com/embed/")
             .replace(/\/embed\/intl-[a-z]+\//, "/embed/");
 
-          return '<div style="padding: 8px; background: #121212; border-radius: 12px;">' +
+          return '<div style="padding: 10px; background: #121212; border-radius: 12px; text-align: center;">' +
                    '<iframe src="' + cleanUrl + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media" style="border-radius: 8px;"></iframe>' +
                  '</div>';
         }
       });
 
-      // 2. WIDGET INSTAGRAM REAL
+      // 2. WIDGET INSTAGRAM
       CMS.registerEditorComponent({
         id: "instagram",
         label: "📸 Instagram",
@@ -63,14 +60,14 @@
             hint: "Ejemplo: https://www.instagram.com/p/C_EXAMPLE/"
           }
         ],
-        pattern: /^<iframe[^>]*src="https:\/\/www\.instagram\.com\/(?:p|reel)\/([^/]+)\/embed"[^>]*><\/iframe>$/,
+        pattern: /^(?:\{\{<\s*instagram\s+"?([^"\s>]+)"?\s*>\}\}|https?:\/\/(?:www\.)?instagram\.com\/(?:p|reel)\/([^/?#&]+))/m,
         fromBlock: function(match) {
-          return { url: "https://www.instagram.com/p/" + match[1] + "/" };
+          var matchedUrl = match[1] || match[0] || "";
+          return { url: matchedUrl };
         },
         toBlock: function(obj) {
           if (!obj.url) return "";
-          var cleanUrl = obj.url.trim().split('?')[0].replace(/\/$/, "");
-          return '<iframe src="' + cleanUrl + '/embed" width="400" height="480" frameborder="0" scrolling="no" allowtransparency="true"></iframe>';
+          return '{{< instagram "' + obj.url.trim() + '" >}}';
         },
         toPreview: function(obj) {
           if (!obj.url) return '<div style="padding: 10px; color: #888;">Introduce una URL de Instagram...</div>';
@@ -81,7 +78,7 @@
         }
       });
 
-      // 3. WIDGET GALERÍA REAL
+      // 3. WIDGET GALERÍA DE IMÁGENES
       CMS.registerEditorComponent({
         id: "gallery",
         label: "🖼️ Galería de Imágenes",
@@ -93,7 +90,7 @@
             field: { label: "Imagen", name: "image", widget: "image" }
           }
         ],
-        pattern: /^<div class="cms-gallery">(.*?)<\/div>$/s,
+        pattern: /^<div class="cms-gallery">(.*?)<\/div>$/ms,
         fromBlock: function(match) {
           return { images: [] };
         },
