@@ -6,8 +6,10 @@ media_library:
   name: uploadcare
   config:
     publicKey: "demopublickey"
-    tabs: "file url camera facebook gdrive"
-    effects: "crop,rotate,enhance"
+    tabs: "file url camera gdrive"
+    effects: "crop,rotate"
+    settings:
+      crop: "21:9, 16:9, 4:3, 1:1, free"
 
 media_folder: "public/uploads"
 public_folder: "/uploads"
