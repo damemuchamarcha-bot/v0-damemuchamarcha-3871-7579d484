@@ -11,17 +11,17 @@
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
     <script>
-      // Helper para limpiar cualquier URL de Spotify (quita saltos de línea, intl-es y ?si=)
-      function cleanSpotifyUrl(rawUrl) {
-        if (!rawUrl) return "";
-        var singleLine = rawUrl.replace(/[\r\n]+/g, "").trim();
-        var noParams = singleLine.split('?')[0];
-        return noParams
+      // Función para limpiar URLs de Spotify (elimina saltos de línea, intl-es y params ?si=)
+      function sanitizeSpotifyUrl(url) {
+        if (!url) return "";
+        var clean = url.replace(/[\r\n\s]+/g, ""); // Quita saltos de línea y espacios
+        clean = clean.split('?')[0]; // Elimina rastreadores tipo ?si=...
+        return clean
           .replace("open.spotify.com/", "open.spotify.com/embed/")
           .replace(/\/embed\/intl-[a-z]+\//, "/embed/");
       }
 
-      // 1. WIDGET SPOTIFY
+      // 1. WIDGET SPOTIFY BLINDADO
       CMS.registerEditorComponent({
         id: "spotify",
         label: "🎵 Spotify",
@@ -30,25 +30,25 @@
             name: "url",
             label: "Enlace de Spotify",
             widget: "string",
-            hint: "Pega la URL de la canción, álbum o playlist"
+            hint: "Pega aquí cualquier URL de Spotify"
           }
         ],
-        // Soporta saltos de línea (s), espacios y shortcodes de Hugo/Decap
-        pattern: /^\{\{<\s*spotify\s+"([^"]+)"\s*>\}\}$/s,
+        // RegExp con bandera 's' para atrapar contenido multilínea sin romper el componente
+        pattern: /^\{\{<\s*spotify\s+"([\s\S]+?)"\s*>\}\}$/s,
         fromBlock: function(match) {
           return {
-            url: match[1] ? match[1].replace(/[\r\n]+/g, "").trim() : ""
+            url: match[1] ? match[1].replace(/[\r\n\s]+/g, "") : ""
           };
         },
         toBlock: function(obj) {
           if (!obj.url) return "";
-          // Guardamos la URL limpia en una sola línea para no romper el Markdown
-          var clean = obj.url.replace(/[\r\n]+/g, "").trim();
-          return '{{< spotify "' + clean + '" >}}';
+          // Al guardar, se asegura de formatear la URL en una sola línea limpia
+          var cleanUrl = obj.url.replace(/[\r\n\s]+/g, "").split('?')[0];
+          return '{{< spotify "' + cleanUrl + '" >}}';
         },
         toPreview: function(obj) {
           if (!obj.url) return '<div style="padding: 10px; color: #888;">Introduce una URL de Spotify...</div>';
-          var embedUrl = cleanSpotifyUrl(obj.url);
+          var embedUrl = sanitizeSpotifyUrl(obj.url);
 
           return '<div style="padding: 10px; background: #121212; border-radius: 12px; text-align: center;">' +
                    '<iframe src="' + embedUrl + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media" style="border-radius: 8px;"></iframe>' +
@@ -56,7 +56,7 @@
         }
       });
 
-      // 2. WIDGET INSTAGRAM
+      // 2. WIDGET INSTAGRAM BLINDADO
       CMS.registerEditorComponent({
         id: "instagram",
         label: "📸 Instagram",
@@ -68,20 +68,20 @@
             hint: "Ejemplo: https://www.instagram.com/p/C_EXAMPLE/"
           }
         ],
-        pattern: /^\{\{<\s*instagram\s+"([^"]+)"\s*>\}\}$/s,
+        pattern: /^\{\{<\s*instagram\s+"([\s\S]+?)"\s*>\}\}$/s,
         fromBlock: function(match) {
           return {
-            url: match[1] ? match[1].replace(/[\r\n]+/g, "").trim() : ""
+            url: match[1] ? match[1].replace(/[\r\n\s]+/g, "") : ""
           };
         },
         toBlock: function(obj) {
           if (!obj.url) return "";
-          var clean = obj.url.replace(/[\r\n]+/g, "").trim();
+          var clean = obj.url.replace(/[\r\n\s]+/g, "").split('?')[0];
           return '{{< instagram "' + clean + '" >}}';
         },
         toPreview: function(obj) {
           if (!obj.url) return '<div style="padding: 10px; color: #888;">Introduce una URL de Instagram...</div>';
-          var cleanUrl = obj.url.replace(/[\r\n]+/g, "").trim().split('?')[0].replace(/\/$/, "");
+          var cleanUrl = obj.url.replace(/[\r\n\s]+/g, "").split('?')[0].replace(/\/$/, "");
           return '<div style="display: flex; justify-content: center; background: #fafafa; padding: 12px; border: 1px solid #e0e0e0; border-radius: 12px;">' +
                    '<iframe src="' + cleanUrl + '/embed" width="400" height="480" frameborder="0" scrolling="no"></iframe>' +
                  '</div>';
