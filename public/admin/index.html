@@ -21,7 +21,6 @@
             hint: "Pega el enlace de la canción, álbum o playlist"
           }
         ],
-        // Detecta shortcodes, iframes y URLs directas de Spotify
         pattern: /(?:\{\{<\s*spotify\s+["']?([^"'\s>]+)["']?\s*>\}\}|https?:\/\/open\.spotify\.com\/(?:intl-[a-z]+\/)?(album|track|playlist)\/([a-zA-Z0-9]+))/s,
         fromBlock: function(match) {
           if (match[1]) {
@@ -42,17 +41,24 @@
             return '<div style="padding:12px; background:#222; color:#fff; border-radius:8px; text-align:center;">🎵 Spotify (Introduce URL)</div>';
           }
           
-          var url = obj.url.trim().split('?')[0];
+          var cleanUrl = obj.url.trim().split('?')[0];
           
-          // Limpia prefijos como intl-es/ para formatear la URL del embed correctamente
-          url = url.replace(/open\.spotify\.com\/(?:intl-[a-z]+\/)?/, "open.spotify.com/");
-          if (!url.includes("/embed/")) {
-            url = url.replace("open.spotify.com/", "open.spotify.com/embed/");
-          }
+          // Extrae el tipo (album/track/playlist) y el ID para mostrar información en la tarjeta
+          var parts = cleanUrl.replace(/https?:\/\/open\.spotify\.com\/(?:intl-[a-z]+\/)?/, "").split("/");
+          var type = parts[0] ? parts[0].toUpperCase() : "SPOTIFY";
+          var id = parts[1] || "";
 
+          // Renderiza una tarjeta gráfica idéntica a la de Spotify que NUNCA se queda en negro
           return (
-            '<div style="padding:10px; background:#121212; border-radius:12px; margin:10px 0;">' +
-              '<iframe src="' + url + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media" style="border-radius:8px;"></iframe>' +
+            '<div style="background: linear-gradient(135deg, #1db954 0%, #121212 100%); padding: 16px; border-radius: 12px; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: space-between; margin: 12px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">' +
+              '<div style="display: flex; align-items: center; gap: 12px;">' +
+                '<div style="background: #000; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px;">🎵</div>' +
+                '<div>' +
+                  '<div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #1db954; font-weight: bold;">Reproductor de ' + type + '</div>' +
+                  '<div style="font-size: 14px; font-weight: 600; margin-top: 2px; color: #fff;">ID: ' + id + '</div>' +
+                '</div>' +
+              '</div>' +
+              '<a href="' + cleanUrl + '" target="_blank" style="background: #1db954; color: #000; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; text-decoration: none;">Escuchar en Spotify ↗</a>' +
             '</div>'
           );
         }
