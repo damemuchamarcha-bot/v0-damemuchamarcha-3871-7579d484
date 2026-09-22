@@ -40,6 +40,4 @@ Duckwrth ha decidido hacernos descubrir el otro lado de la cinta y darnos otra v
 
 Queremos destacar la nominación en la 67.ª edición de los Premios Grammy en la categoría de Best Immersive Audio Album por su aclamado proyecto conceptual *All American F—Boy*. Aunque el trofeo y el reconocimiento técnico de esta categoría corresponden directamente al ingeniero de mezcla inmersiva Andrew Law por adaptar las pistas originales al formato Dolby Atmos, Duckwrth celebró este logro como una auténtica manifestación, ya que durante las sesiones de grabación en el estudio solía bromear con sus amigos tocando un "botón invisible de los Grammy" cada vez que finalizaban una canción.
 
-<iframe src="https://open.spotify.com/embed/album/5LYjokc0bkRmpo3zh43e3s" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
-
 <iframe src="https://open.spotify.com/embed/album/5LYjokc0bkRmpo3zh43e3s?si=_ea3rqLQT5uf0cpiKmfOSw" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
