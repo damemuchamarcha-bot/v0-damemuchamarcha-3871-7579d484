@@ -5,11 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dame Marcha CMS</title>
     <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
+
+    <!-- 1. CARGA DE UPLOADCARE Y SU EDITOR DE IMÁGENES/MARCOS -->
+    <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js" charset="utf-8"></script>
+    <script src="https://ucarecdn.com/libs/widget-tab-effects/1.x/uploadcare.tab-effects.min.js"></script>
   </head>
   <body>
+    <!-- 2. CARGA DE DECAP CMS -->
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
     <script>
+      // CONFIGURACIÓN DE UPLOADCARE (Editor de recortes/marcos)
+      UPLOADCARE_LOCALE = 'es';
+      UPLOADCARE_TABS = 'file url facebook gdrive instagram';
+      // Activa los efectos y recortes (1:1, 16:9, etc.)
+      if (window.uploadcareTabEffects) {
+        uploadcare.registerTab('preview', uploadcareTabEffects);
+      }
+
+      // 3. WIDGET SPOTIFY (Para web pública + panel)
       CMS.registerEditorComponent({
         id: "spotify",
         label: "🎵 Spotify",
@@ -18,49 +32,111 @@
             name: "url",
             label: "Enlace de Spotify",
             widget: "string",
-            hint: "Pega el enlace de la canción, álbum o playlist"
+            hint: "Pega la URL de la canción, álbum o playlist"
           }
         ],
-        pattern: /(?:\{\{<\s*spotify\s+["']?([^"'\s>]+)["']?\s*>\}\}|https?:\/\/open\.spotify\.com\/(?:intl-[a-z]+\/)?(album|track|playlist)\/([a-zA-Z0-9]+))/s,
+        pattern: /^<iframe[^>]*src="https:\/\/open\.spotify\.com\/embed\/([^"]+)"[^>]*><\/iframe>$/,
         fromBlock: function(match) {
-          if (match[1]) {
-            return { url: match[1] };
-          }
-          if (match[2] && match[3]) {
-            return { url: "https://open.spotify.com/" + match[2] + "/" + match[3] };
-          }
-          return { url: "" };
+          return {
+            url: "https://open.spotify.com/" + (match[1] || "")
+          };
         },
         toBlock: function(obj) {
           if (!obj || !obj.url) return "";
-          var cleanUrl = obj.url.trim().split('?')[0];
-          return '{{< spotify "' + cleanUrl + '" >}}';
+          var cleanUrl = obj.url.trim()
+            .replace("open.spotify.com/", "open.spotify.com/embed/")
+            .replace(/\/embed\/intl-[a-z]+\//, "/embed/")
+            .split('?')[0];
+
+          return '<iframe src="' + cleanUrl + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>';
         },
         toPreview: function(obj) {
-          if (!obj || !obj.url) {
-            return '<div style="padding:12px; background:#222; color:#fff; border-radius:8px; text-align:center;">🎵 Spotify (Introduce URL)</div>';
-          }
+          if (!obj || !obj.url) return '<div style="padding:10px; color:#888;">Introduce una URL de Spotify...</div>';
           
-          var cleanUrl = obj.url.trim().split('?')[0];
-          
-          // Extrae el tipo (album/track/playlist) y el ID para mostrar información en la tarjeta
-          var parts = cleanUrl.replace(/https?:\/\/open\.spotify\.com\/(?:intl-[a-z]+\/)?/, "").split("/");
+          var cleanUrl = obj.url.trim()
+            .replace("open.spotify.com/", "open.spotify.com/embed/")
+            .replace(/\/embed\/intl-[a-z]+\//, "/embed/")
+            .split('?')[0];
+
+          var parts = cleanUrl.replace("https://open.spotify.com/embed/", "").split("/");
           var type = parts[0] ? parts[0].toUpperCase() : "SPOTIFY";
           var id = parts[1] || "";
 
-          // Renderiza una tarjeta gráfica idéntica a la de Spotify que NUNCA se queda en negro
           return (
-            '<div style="background: linear-gradient(135deg, #1db954 0%, #121212 100%); padding: 16px; border-radius: 12px; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: space-between; margin: 12px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">' +
+            '<div style="background: linear-gradient(135deg, #1db954 0%, #121212 100%); padding: 16px; border-radius: 12px; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: space-between; margin: 12px 0;">' +
               '<div style="display: flex; align-items: center; gap: 12px;">' +
-                '<div style="background: #000; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px;">🎵</div>' +
+                '<div style="background: #000; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">🎵</div>' +
                 '<div>' +
-                  '<div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #1db954; font-weight: bold;">Reproductor de ' + type + '</div>' +
-                  '<div style="font-size: 14px; font-weight: 600; margin-top: 2px; color: #fff;">ID: ' + id + '</div>' +
+                  '<div style="font-size: 11px; text-transform: uppercase; color: #1db954; font-weight: bold;">REPRODUCTOR DE ' + type + '</div>' +
+                  '<div style="font-size: 13px; font-weight: 600; color: #fff;">ID: ' + id + '</div>' +
                 '</div>' +
               '</div>' +
-              '<a href="' + cleanUrl + '" target="_blank" style="background: #1db954; color: #000; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; text-decoration: none;">Escuchar en Spotify ↗</a>' +
+              '<a href="' + cleanUrl.replace('/embed/', '/') + '" target="_blank" style="background: #1db954; color: #000; padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; text-decoration: none;">Ver en Spotify ↗</a>' +
             '</div>'
           );
+        }
+      });
+
+      // 4. WIDGET INSTAGRAM
+      CMS.registerEditorComponent({
+        id: "instagram",
+        label: "📸 Instagram",
+        fields: [
+          {
+            name: "url",
+            label: "URL del Post / Reel",
+            widget: "string"
+          }
+        ],
+        pattern: /^<iframe[^>]*src="https:\/\/www\.instagram\.com\/(?:p|reel)\/([^/]+)\/embed"[^>]*><\/iframe>$/,
+        fromBlock: function(match) {
+          return { url: "https://www.instagram.com/p/" + match[1] + "/" };
+        },
+        toBlock: function(obj) {
+          if (!obj || !obj.url) return "";
+          var cleanUrl = obj.url.trim().split('?')[0].replace(/\/$/, "");
+          return '<iframe src="' + cleanUrl + '/embed" width="400" height="480" frameborder="0" scrolling="no" allowtransparency="true"></iframe>';
+        },
+        toPreview: function(obj) {
+          if (!obj || !obj.url) return '<div style="padding:10px; color:#888;">Introduce una URL de Instagram...</div>';
+          var cleanUrl = obj.url.trim().split('?')[0].replace(/\/$/, "");
+          return (
+            '<div style="display: flex; justify-content: center; background: #fafafa; padding: 12px; border: 1px solid #e0e0e0; border-radius: 12px;">' +
+              '<iframe src="' + cleanUrl + '/embed" width="400" height="480" frameborder="0" scrolling="no"></iframe>' +
+            '</div>'
+          );
+        }
+      });
+
+      // 5. WIDGET GALERÍA DE IMÁGENES
+      CMS.registerEditorComponent({
+        id: "gallery",
+        label: "🖼️ Galería de Imágenes",
+        fields: [
+          {
+            name: "images",
+            label: "Imágenes de la Galería",
+            widget: "list",
+            field: { label: "Imagen", name: "image", widget: "image" }
+          }
+        ],
+        pattern: /^<div class="cms-gallery">(.*?)<\/div>$/s,
+        fromBlock: function(match) {
+          return { images: [] };
+        },
+        toBlock: function(obj) {
+          if (!obj || !obj.images || !obj.images.length) return "";
+          var imgTags = obj.images.map(function(img) {
+            return '<img src="' + img + '" alt="Imagen de galería" />';
+          }).join('\n  ');
+          return '<div class="cms-gallery">\n  ' + imgTags + '\n</div>';
+        },
+        toPreview: function(obj) {
+          if (!obj || !obj.images || !obj.images.length) return '<div style="padding:10px; color:#888;">Selecciona imágenes para la galería...</div>';
+          var imgTags = obj.images.map(function(img) {
+            return '<img src="' + img + '" style="width: 120px; height: 120px; object-fit: cover; margin: 4px; border-radius: 8px;" />';
+          }).join('');
+          return '<div style="display: flex; flex-wrap: wrap; gap: 8px; background: #f8f9fa; padding: 12px; border-radius: 12px; border: 1px dashed #ccc;">' + imgTags + '</div>';
         }
       });
     </script>
