@@ -1,4 +1,4 @@
-<!doctype html>
+ <!doctype html>
 <html>
 <head>
   <meta charset="utf-8" />
@@ -21,5 +21,30 @@
 <body>
   <!-- Carga el script de Decap CMS -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+
+  <!-- REGISTRO DEL BOTÓN DE MOSAICO ENTRE TEXTO -->
+  <script>
+    CMS.registerEditorComponent({
+      id: "mosaico_texto",
+      label: "🖼️ Mosaico de fotos (Entre texto)",
+      fields: [
+        { name: "img1", label: "Foto 1", widget: "image" },
+        { name: "img2", label: "Foto 2", widget: "image", required: false },
+        { name: "img3", label: "Foto 3", widget: "image", required: false }
+      ],
+      pattern: /^<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 my-8">[\s\S]*?<\/div>$/,
+      fromBlock: function(match) { return {}; },
+      toBlock: function(data) {
+        var imgs = [data.img1, data.img2, data.img3].filter(Boolean);
+        var html = imgs.map(function(url) {
+          return '  <div class="overflow-hidden rounded-lg border-2 border-white/10 aspect-square"><img src="' + url + '" class="w-full h-full object-cover m-0" /></div>';
+        }).join('\n');
+        return '<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 my-8">\n' + html + '\n</div>';
+      },
+      toPreview: function(data) {
+        return '<b>[Mosaico de fotos insertado]</b>';
+      }
+    });
+  </script>
 </body>
 </html>
