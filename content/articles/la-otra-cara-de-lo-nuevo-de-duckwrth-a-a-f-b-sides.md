@@ -6,9 +6,7 @@ author: Marta Menjíbar
 section: musica
 categoryLabel: Análisis de álbumes
 image: https://1s4oyld5dc.ucarecd.net/3101cc2b-47fc-4005-94df-5da5d829a46d/-/crop/1000x429/0,0/-/preview/
-galeria:
-  - https://1s4oyld5dc.ucarecd.net/6091fb08-de03-498f-a360-5ca4483540f7/
-  - https://1s4oyld5dc.ucarecd.net/8137a0ad-73c9-4a89-918a-aa607e536fbc/
+galeria: []
 ---
 El cantante estadounidense **Duckwrth** lanzó su nuevo disco *A.A.F.B - Sides* tras su último álbum en 2025, *All American F*ckBoy*, que trajo algunas colaboraciones como con el rapero IDK.
 
@@ -42,3 +40,9 @@ Este disco ha tenido 3 videoclips. En “I Wanna Be Your Dog Again” aparece ca
 Duckwrth ha decidido hacernos descubrir el otro lado de la cinta y darnos otra versión de un disco. Ocho canciones después, el álbum sigue explorando distintas atmósferas y subgéneros con total libertad.
 
 Queremos destacar la nominación en la 67.ª edición de los Premios Grammy en la categoría de Best Immersive Audio Album por su aclamado proyecto conceptual *All American F—Boy*. Aunque el trofeo y el reconocimiento técnico de esta categoría corresponden directamente al ingeniero de mezcla inmersiva Andrew Law por adaptar las pistas originales al formato Dolby Atmos, Duckwrth celebró este logro como una auténtica manifestación, ya que durante las sesiones de grabación en el estudio solía bromear con sus amigos tocando un "botón invisible de los Grammy" cada vez que finalizaban una canción.
+
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 my-8">
+  <div class="overflow-hidden rounded-lg border-2 border-white/10 aspect-square"><img src="https://1s4oyld5dc.ucarecd.net/a22678f6-466f-4b6c-b63e-677f0464a617/" class="w-full h-full object-cover m-0" /></div>
+  <div class="overflow-hidden rounded-lg border-2 border-white/10 aspect-square"><img src="https://1s4oyld5dc.ucarecd.net/f3416786-49fd-492b-bd89-58803b803652/" class="w-full h-full object-cover m-0" /></div>
+  <div class="overflow-hidden rounded-lg border-2 border-white/10 aspect-square"><img src="https://1s4oyld5dc.ucarecd.net/b4e59ac7-c78c-4c5b-825a-07ee9014ca30/" class="w-full h-full object-cover m-0" /></div>
+</div>
