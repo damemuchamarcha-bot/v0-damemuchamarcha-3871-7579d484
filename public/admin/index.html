@@ -1,144 +1,77 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dame Marcha CMS</title>
-    <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Content Manager — Dame Marcha</title>
 
-    <!-- 1. CARGA DE UPLOADCARE Y SU EDITOR DE IMÁGENES/MARCOS -->
-    <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js" charset="utf-8"></script>
-    <script src="https://ucarecdn.com/libs/widget-tab-effects/1.x/uploadcare.tab-effects.min.js"></script>
-  </head>
-  <body>
-    <!-- 2. CARGA DE DECAP CMS -->
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <!-- Configuración de ratios para Uploadcare -->
+  <script>
+    window.UPLOADCARE_CROP = "21:9, 16:9, 4:3, 1:1, free";
+    window.UPLOADCARE_MANUAL_CROP = true;
+    window.UPLOADCARE_LOCALE = 'es';
+  </script>
 
-    <script>
-      // CONFIGURACIÓN DE UPLOADCARE (Editor de recortes/marcos)
-      UPLOADCARE_LOCALE = 'es';
-      UPLOADCARE_TABS = 'file url facebook gdrive instagram';
-      // Activa los efectos y recortes (1:1, 16:9, etc.)
-      if (window.uploadcareTabEffects) {
-        uploadcare.registerTab('preview', uploadcareTabEffects);
+  <!-- Script oficial de Uploadcare para habilitar los recortes -->
+  <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js" charset="utf-8"></script>
+</head>
+<body>
+  <!-- Carga el script de Decap CMS -->
+  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+
+  <!-- REGISTRO DE COMPONENTES DE GALERÍA TIPO WORDPRESS -->
+  <script>
+    // 1. GALERÍA DE 2 IMÁGENES AL LADO
+    CMS.registerEditorComponent({
+      id: "galeria_2",
+      label: "📷 Galería (2 Imágenes al lado)",
+      fields: [
+        { name: "img1", label: "Imagen 1 (Izquierda)", widget: "image" },
+        { name: "cap1", label: "Pie de foto 1", widget: "string", required: false },
+        { name: "img2", label: "Imagen 2 (Derecha)", widget: "image" },
+        { name: "cap2", label: "Pie de foto 2", widget: "string", required: false }
+      ],
+      pattern: /^<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">[\s\S]*?<\/div>$/,
+      fromBlock: function(match) { return {}; },
+      toBlock: function(data) {
+        return `<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+  <figure class="m-0 flex flex-col items-center">
+    <img src="${data.img1 || ''}" alt="${data.cap1 || ''}" class="w-full h-64 object-cover border-2 border-white/10" />
+    ${data.cap1 ? `<figcaption class="mt-2 text-center font-mono text-xs text-punk-cream/60">${data.cap1}</figcaption>` : ''}
+  </figure>
+  <figure class="m-0 flex flex-col items-center">
+    <img src="${data.img2 || ''}" alt="${data.cap2 || ''}" class="w-full h-64 object-cover border-2 border-white/10" />
+    ${data.cap2 ? `<figcaption class="mt-2 text-center font-mono text-xs text-punk-cream/60">${data.cap2}</figcaption>` : ''}
+  </figure>
+</div>`;
+      },
+      toPreview: function(data) {
+        return `<b>[Galería 2 imágenes]:</b> ${data.cap1 || 'Sin pie'} | ${data.cap2 || 'Sin pie'}`;
       }
+    });
 
-      // 3. WIDGET SPOTIFY (Para web pública + panel)
-      CMS.registerEditorComponent({
-        id: "spotify",
-        label: "🎵 Spotify",
-        fields: [
-          {
-            name: "url",
-            label: "Enlace de Spotify",
-            widget: "string",
-            hint: "Pega la URL de la canción, álbum o playlist"
-          }
-        ],
-        pattern: /^<iframe[^>]*src="https:\/\/open\.spotify\.com\/embed\/([^"]+)"[^>]*><\/iframe>$/,
-        fromBlock: function(match) {
-          return {
-            url: "https://open.spotify.com/" + (match[1] || "")
-          };
-        },
-        toBlock: function(obj) {
-          if (!obj || !obj.url) return "";
-          var cleanUrl = obj.url.trim()
-            .replace("open.spotify.com/", "open.spotify.com/embed/")
-            .replace(/\/embed\/intl-[a-z]+\//, "/embed/")
-            .split('?')[0];
-
-          return '<iframe src="' + cleanUrl + '" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>';
-        },
-        toPreview: function(obj) {
-          if (!obj || !obj.url) return '<div style="padding:10px; color:#888;">Introduce una URL de Spotify...</div>';
-          
-          var cleanUrl = obj.url.trim()
-            .replace("open.spotify.com/", "open.spotify.com/embed/")
-            .replace(/\/embed\/intl-[a-z]+\//, "/embed/")
-            .split('?')[0];
-
-          var parts = cleanUrl.replace("https://open.spotify.com/embed/", "").split("/");
-          var type = parts[0] ? parts[0].toUpperCase() : "SPOTIFY";
-          var id = parts[1] || "";
-
-          return (
-            '<div style="background: linear-gradient(135deg, #1db954 0%, #121212 100%); padding: 16px; border-radius: 12px; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: space-between; margin: 12px 0;">' +
-              '<div style="display: flex; align-items: center; gap: 12px;">' +
-                '<div style="background: #000; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">🎵</div>' +
-                '<div>' +
-                  '<div style="font-size: 11px; text-transform: uppercase; color: #1db954; font-weight: bold;">REPRODUCTOR DE ' + type + '</div>' +
-                  '<div style="font-size: 13px; font-weight: 600; color: #fff;">ID: ' + id + '</div>' +
-                '</div>' +
-              '</div>' +
-              '<a href="' + cleanUrl.replace('/embed/', '/') + '" target="_blank" style="background: #1db954; color: #000; padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; text-decoration: none;">Ver en Spotify ↗</a>' +
-            '</div>'
-          );
-        }
-      });
-
-      // 4. WIDGET INSTAGRAM
-      CMS.registerEditorComponent({
-        id: "instagram",
-        label: "📸 Instagram",
-        fields: [
-          {
-            name: "url",
-            label: "URL del Post / Reel",
-            widget: "string"
-          }
-        ],
-        pattern: /^<iframe[^>]*src="https:\/\/www\.instagram\.com\/(?:p|reel)\/([^/]+)\/embed"[^>]*><\/iframe>$/,
-        fromBlock: function(match) {
-          return { url: "https://www.instagram.com/p/" + match[1] + "/" };
-        },
-        toBlock: function(obj) {
-          if (!obj || !obj.url) return "";
-          var cleanUrl = obj.url.trim().split('?')[0].replace(/\/$/, "");
-          return '<iframe src="' + cleanUrl + '/embed" width="400" height="480" frameborder="0" scrolling="no" allowtransparency="true"></iframe>';
-        },
-        toPreview: function(obj) {
-          if (!obj || !obj.url) return '<div style="padding:10px; color:#888;">Introduce una URL de Instagram...</div>';
-          var cleanUrl = obj.url.trim().split('?')[0].replace(/\/$/, "");
-          return (
-            '<div style="display: flex; justify-content: center; background: #fafafa; padding: 12px; border: 1px solid #e0e0e0; border-radius: 12px;">' +
-              '<iframe src="' + cleanUrl + '/embed" width="400" height="480" frameborder="0" scrolling="no"></iframe>' +
-            '</div>'
-          );
-        }
-      });
-
-      // 5. WIDGET GALERÍA DE IMÁGENES
-      CMS.registerEditorComponent({
-        id: "gallery",
-        label: "🖼️ Galería de Imágenes",
-        fields: [
-          {
-            name: "images",
-            label: "Imágenes de la Galería",
-            widget: "list",
-            field: { label: "Imagen", name: "image", widget: "image" }
-          }
-        ],
-        pattern: /^<div class="cms-gallery">(.*?)<\/div>$/s,
-        fromBlock: function(match) {
-          return { images: [] };
-        },
-        toBlock: function(obj) {
-          if (!obj || !obj.images || !obj.images.length) return "";
-          var imgTags = obj.images.map(function(img) {
-            return '<img src="' + img + '" alt="Imagen de galería" />';
-          }).join('\n  ');
-          return '<div class="cms-gallery">\n  ' + imgTags + '\n</div>';
-        },
-        toPreview: function(obj) {
-          if (!obj || !obj.images || !obj.images.length) return '<div style="padding:10px; color:#888;">Selecciona imágenes para la galería...</div>';
-          var imgTags = obj.images.map(function(img) {
-            return '<img src="' + img + '" style="width: 120px; height: 120px; object-fit: cover; margin: 4px; border-radius: 8px;" />';
-          }).join('');
-          return '<div style="display: flex; flex-wrap: wrap; gap: 8px; background: #f8f9fa; padding: 12px; border-radius: 12px; border: 1px dashed #ccc;">' + imgTags + '</div>';
-        }
-      });
-    </script>
-  </body>
+    // 2. GALERÍA DE 3 IMÁGENES AL LADO
+    CMS.registerEditorComponent({
+      id: "galeria_3",
+      label: "📷 Galería (3 Imágenes al lado)",
+      fields: [
+        { name: "img1", label: "Imagen 1", widget: "image" },
+        { name: "img2", label: "Imagen 2", widget: "image" },
+        { name: "img3", label: "Imagen 3", widget: "image" }
+      ],
+      pattern: /^<div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-8">[\s\S]*?<\/div>$/,
+      fromBlock: function(match) { return {}; },
+      toBlock: function(data) {
+        return `<div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-8">
+  <img src="${data.img1 || ''}" class="w-full h-48 object-cover border-2 border-white/10" />
+  <img src="${data.img2 || ''}" class="w-full h-48 object-cover border-2 border-white/10" />
+  <img src="${data.img3 || ''}" class="w-full h-48 object-cover border-2 border-white/10" />
+</div>`;
+      },
+      toPreview: function(data) {
+        return `<b>[Galería 3 imágenes]</b>`;
+      }
+    });
+  </script>
+</body>
 </html>
