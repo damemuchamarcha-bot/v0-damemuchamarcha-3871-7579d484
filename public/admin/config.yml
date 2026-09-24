@@ -4,7 +4,6 @@ backend:
   branch: main
   base_url: https://decap-cms-oauth-orcin.vercel.app
   auth_endpoint: auth
-  
 
 media_library:
   name: uploadcare
@@ -35,4 +34,16 @@ collections:
       - {label: "Sección", name: "section", widget: "select", options: ["musica", "cine"]}
       - {label: "Categoría", name: "categoryLabel", widget: "string"}
       - {label: "Imagen de Portada", name: "image", widget: "image"}
+      
+      # --- GALERÍA INTEGRADA (MOSAICO DE MÚLTIPLES FOTOS) ---
+      - label: "Galería de fotos (Mosaico)"
+        name: "galeria"
+        widget: "list"
+        required: false
+        hint: "Sube las fotos que quieras añadir a la galería del artículo"
+        field:
+          label: "Imagen"
+          name: "image"
+          widget: "image"
+
       - {label: "Contenido del Artículo", name: "body", widget: "markdown"}
