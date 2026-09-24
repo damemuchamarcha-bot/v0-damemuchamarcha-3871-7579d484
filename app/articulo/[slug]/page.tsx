@@ -4,6 +4,7 @@ import Image from 'next/image'
 import type { Metadata } from 'next'
 import { ArrowLeft, Clock, Calendar } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
+import rehypeRaw from 'rehype-raw'
 import { articles, getArticle, getRecent } from '@/lib/articles'
 import { CategoryTag } from '@/components/category-tag'
 import { ArticleCard } from '@/components/article-card'
@@ -162,6 +163,7 @@ export default async function ArticlePage({
               }`}
             >
               <ReactMarkdown
+                rehypePlugins={[rehypeRaw]}
                 components={{
                   strong: ({ node, ...props }) => <strong className="font-bold text-punk-pink" {...props} />,
                   em: ({ node, ...props }) => <em className="italic text-punk-cream" {...props} />,
@@ -201,7 +203,7 @@ export default async function ArticlePage({
                             fill
                             sizes="(max-width: 768px) 100vw, 768px"
                             className="object-cover"
-                            unoptimized={finalSrc.startsWith('/uploads')}
+                            unoptimized={finalSrc.startsWith('/uploads') || finalSrc.startsWith('uploads/')}
                           />
                         </span>
                         {alt && (
