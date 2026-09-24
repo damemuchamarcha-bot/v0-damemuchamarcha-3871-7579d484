@@ -28,7 +28,16 @@ En un vídeo publicado en TikTok, Duckwrth anunció que este nuevo álbum funcio
 
 Canciones de desamor y con letras curiosas mantienen la energía del artista al cien por cien.
 
-<iframe src="https://open.spotify.com/embed/album/5LYjokc0bkRmpo3zh43e3s" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+  <figure class="m-0 flex flex-col items-center">
+    <img src="https://1s4oyld5dc.ucarecd.net/648774b5-a7e7-462b-8bd5-bba1839eda8c/" alt="" class="w-full h-64 object-cover border-2 border-white/10" />
+    
+  </figure>
+  <figure class="m-0 flex flex-col items-center">
+    <img src="https://1s4oyld5dc.ucarecd.net/ff823887-5fa1-4def-9276-4e0074330b35/" alt="" class="w-full h-64 object-cover border-2 border-white/10" />
+    
+  </figure>
+</div>
 
 Parte de la responsabilidad del mundo sonoro de este disco recae en los productores, como el propio artista, Pera, Wave IQ, Blake Straus, The Pocket Queen, Wes Singerman, Two Fresh, Max Volante, Chassidy Joiner, Jessica Hampton y AlexKeyz, entre otros.
 
