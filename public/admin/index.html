@@ -8,73 +8,18 @@
   <!-- Ruta explícita del archivo config.yml -->
   <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
 
-  <!-- Configuración de ratios para Uploadcare -->
+  <!-- Configuración de ratios para Uploadcare (INTACTA) -->
   <script>
     window.UPLOADCARE_CROP = "21:9, 16:9, 4:3, 1:1, free";
     window.UPLOADCARE_MANUAL_CROP = true;
     window.UPLOADCARE_LOCALE = 'es';
   </script>
 
-  <!-- Script oficial de Uploadcare para habilitar los recortes -->
+  <!-- Script oficial de Uploadcare para habilitar los recortes (INTACTO) -->
   <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js" charset="utf-8"></script>
 </head>
 <body>
   <!-- Carga el script de Decap CMS -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-
-  <!-- REGISTRO DE COMPONENTES DE GALERÍA TIPO WORDPRESS -->
-  <script>
-    // 1. GALERÍA DE 2 IMÁGENES AL LADO
-    CMS.registerEditorComponent({
-      id: "galeria_2",
-      label: "📷 Galería (2 Imágenes al lado)",
-      fields: [
-        { name: "img1", label: "Imagen 1 (Izquierda)", widget: "image" },
-        { name: "cap1", label: "Pie de foto 1", widget: "string", required: false },
-        { name: "img2", label: "Imagen 2 (Derecha)", widget: "image" },
-        { name: "cap2", label: "Pie de foto 2", widget: "string", required: false }
-      ],
-      pattern: /^<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">[\s\S]*?<\/div>$/,
-      fromBlock: function(match) { return {}; },
-      toBlock: function(data) {
-        return `<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
-  <figure class="m-0 flex flex-col items-center">
-    <img src="${data.img1 || ''}" alt="${data.cap1 || ''}" class="w-full h-64 object-cover border-2 border-white/10" />
-    ${data.cap1 ? `<figcaption class="mt-2 text-center font-mono text-xs text-punk-cream/60">${data.cap1}</figcaption>` : ''}
-  </figure>
-  <figure class="m-0 flex flex-col items-center">
-    <img src="${data.img2 || ''}" alt="${data.cap2 || ''}" class="w-full h-64 object-cover border-2 border-white/10" />
-    ${data.cap2 ? `<figcaption class="mt-2 text-center font-mono text-xs text-punk-cream/60">${data.cap2}</figcaption>` : ''}
-  </figure>
-</div>`;
-      },
-      toPreview: function(data) {
-        return `<b>[Galería 2 imágenes]:</b> ${data.cap1 || 'Sin pie'} | ${data.cap2 || 'Sin pie'}`;
-      }
-    });
-
-    // 2. GALERÍA DE 3 IMÁGENES AL LADO
-    CMS.registerEditorComponent({
-      id: "galeria_3",
-      label: "📷 Galería (3 Imágenes al lado)",
-      fields: [
-        { name: "img1", label: "Imagen 1", widget: "image" },
-        { name: "img2", label: "Imagen 2", widget: "image" },
-        { name: "img3", label: "Imagen 3", widget: "image" }
-      ],
-      pattern: /^<div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-8">[\s\S]*?<\/div>$/,
-      fromBlock: function(match) { return {}; },
-      toBlock: function(data) {
-        return `<div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-8">
-  <img src="${data.img1 || ''}" class="w-full h-48 object-cover border-2 border-white/10" />
-  <img src="${data.img2 || ''}" class="w-full h-48 object-cover border-2 border-white/10" />
-  <img src="${data.img3 || ''}" class="w-full h-48 object-cover border-2 border-white/10" />
-</div>`;
-      },
-      toPreview: function(data) {
-        return `<b>[Galería 3 imágenes]</b>`;
-      }
-    });
-  </script>
 </body>
 </html>
