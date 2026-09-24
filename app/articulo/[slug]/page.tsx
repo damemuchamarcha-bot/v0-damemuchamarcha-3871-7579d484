@@ -4,7 +4,6 @@ import Image from 'next/image'
 import type { Metadata } from 'next'
 import { ArrowLeft, Clock, Calendar } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
-import rehypeRaw from 'rehype-raw'
 import { articles, getArticle, getRecent } from '@/lib/articles'
 import { CategoryTag } from '@/components/category-tag'
 import { ArticleCard } from '@/components/article-card'
@@ -27,7 +26,7 @@ export async function generateMetadata({
   }
 }
 
-// Helper para transformar enlaces de YouTube/Spotify/Instagram en embeds automáticos estilo WordPress
+// Helper para transformar enlaces de YouTube/Spotify/Instagram en embeds automáticos
 function renderEmbeddedMedia(href: string) {
   // YouTube embed
   const ytMatch = href.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
@@ -151,75 +150,97 @@ export default async function ArticlePage({
           </span>
         </div>
 
-        {/* Cuerpo del artículo con Markdown e Embeds integrados */}
+        {/* Cuerpo del artículo */}
         <div className="mt-10 flex flex-col gap-6">
-          {article.body.map((para, i) => (
-            <div
-              key={i}
-              className={`text-pretty text-lg leading-[1.8] text-punk-cream/85 ${
-                i === 0
-                  ? 'first-letter:float-left first-letter:mr-3 first-letter:font-display first-letter:text-6xl first-letter:leading-[0.8] first-letter:text-punk-pink'
-                  : ''
-              }`}
-            >
-              <ReactMarkdown
-                rehypePlugins={[rehypeRaw]}
-                components={{
-                  strong: ({ node, ...props }) => <strong className="font-bold text-punk-pink" {...props} />,
-                  em: ({ node, ...props }) => <em className="italic text-punk-cream" {...props} />,
-                  p: ({ node, children, ...props }) => <p className="m-0 leading-relaxed" {...props}>{children}</p>,
-                  
-                  // Renderizado automático de enlaces (YouTube, Spotify, Instagram o enlaces normales)
-                  a: ({ node, href, children, ...props }) => {
-                    if (href) {
-                      const embed = renderEmbeddedMedia(href)
-                      if (embed) return embed
-                    }
-                    return (
-                      <a
-                        href={href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-punk-yellow underline hover:text-punk-pink transition-colors"
-                        {...props}
-                      >
-                        {children}
-                      </a>
-                    )
-                  },
+          {article.body.map((para, i) => {
+            const trimmed = para.trim()
 
-                  // Renderizado automático de imágenes inline dentro del texto
-                  img: ({ node, src, alt, ...props }) => {
-                    if (!src) return null
-                    let finalSrc = src
-                    if (finalSrc.startsWith('uploads/')) finalSrc = `/${finalSrc}`
+            // Si el bloque es una URL directa de Youtube, Spotify o Instagram
+            const mediaEmbed = renderEmbeddedMedia(trimmed)
+            if (mediaEmbed) {
+              return <div key={i}>{mediaEmbed}</div>
+            }
 
-                    return (
-                      <span className="my-8 block w-full">
-                        <span className="relative block aspect-[16/9] w-full overflow-hidden border-2 border-white/10">
-                          <Image
-                            src={finalSrc}
-                            alt={alt || 'Imagen del artículo'}
-                            fill
-                            sizes="(max-width: 768px) 100vw, 768px"
-                            className="object-cover"
-                            unoptimized={finalSrc.startsWith('/uploads') || finalSrc.startsWith('uploads/')}
-                          />
-                        </span>
-                        {alt && (
-                          <span className="mt-2 block text-center font-mono text-xs text-punk-cream/60">
-                            {alt}
-                          </span>
-                        )}
-                      </span>
-                    )
-                  },
-                }}
+            // Si es un bloque HTML (p. ej. las galerías subidas desde el editor)
+            const isHTML = trimmed.startsWith('<') && trimmed.endsWith('>')
+            if (isHTML) {
+              return (
+                <div
+                  key={i}
+                  className="my-4 text-pretty text-lg leading-[1.8] text-punk-cream/85"
+                  dangerouslySetInnerHTML={{ __html: para }}
+                />
+              )
+            }
+
+            // Texto Markdown estándar
+            return (
+              <div
+                key={i}
+                className={`text-pretty text-lg leading-[1.8] text-punk-cream/85 ${
+                  i === 0
+                    ? 'first-letter:float-left first-letter:mr-3 first-letter:font-display first-letter:text-6xl first-letter:leading-[0.8] first-letter:text-punk-pink'
+                    : ''
+                }`}
               >
-                {para}
-              </ReactMarkdown>
-            </div>
-          ))}
+                <ReactMarkdown
+                  components={{
+                    strong: ({ node, ...props }) => <strong className="font-bold text-punk-pink" {...props} />,
+                    em: ({ node, ...props }) => <em className="italic text-punk-cream" {...props} />,
+                    p: ({ node, children, ...props }) => <p className="m-0 inline" {...props}>{children}</p>,
+                    
+                    // Renderizado automático de enlaces Markdown
+                    a: ({ node, href, children, ...props }) => {
+                      if (href) {
+                        const embed = renderEmbeddedMedia(href)
+                        if (embed) return embed
+                      }
+                      return (
+                        <a
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-punk-yellow underline hover:text-punk-pink transition-colors"
+                          {...props}
+                        >
+                          {children}
+                        </a>
+                      )
+                    },
+
+                    // Renderizado de imágenes Markdown
+                    img: ({ node, src, alt, ...props }) => {
+                      if (!src) return null
+                      let finalSrc = src
+                      if (finalSrc.startsWith('uploads/')) finalSrc = `/${finalSrc}`
+
+                      return (
+                        <span className="my-8 block w-full">
+                          <span className="relative block aspect-[16/9] w-full overflow-hidden border-2 border-white/10">
+                            <Image
+                              src={finalSrc}
+                              alt={alt || 'Imagen del artículo'}
+                              fill
+                              sizes="(max-width: 768px) 100vw, 768px"
+                              className="object-cover"
+                              unoptimized={finalSrc.startsWith('/uploads') || finalSrc.startsWith('uploads/')}
+                            />
+                          </span>
+                          {alt && (
+                            <span className="mt-2 block text-center font-mono text-xs text-punk-cream/60">
+                              {alt}
+                            </span>
+                          )}
+                        </span>
+                      )
+                    },
+                  }}
+                >
+                  {para}
+                </ReactMarkdown>
+              </div>
+            )
+          })}
         </div>
 
         {/* Galería adicional opcional de la cabecera */}
