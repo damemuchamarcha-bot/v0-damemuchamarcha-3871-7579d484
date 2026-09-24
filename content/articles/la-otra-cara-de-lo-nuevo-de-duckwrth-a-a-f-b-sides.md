@@ -5,7 +5,7 @@ excerpt: Así es como es el nuevo lanzamiento de Duckwrth
 author: Marta Menjíbar
 section: musica
 categoryLabel: Análisis de álbumes
-image: https://1s4oyld5dc.ucarecd.net/b10dea92-66e0-48ac-8889-70e0e6f7fcb7/-/crop/1000x563/0,35/-/preview/
+image: https://1s4oyld5dc.ucarecd.net/3101cc2b-47fc-4005-94df-5da5d829a46d/-/crop/1000x429/0,0/-/preview/
 ---
 El cantante estadounidense **Duckwrth** lanzó su nuevo disco *A.A.F.B - Sides* tras su último álbum en 2025, *All American F*ckBoy*, que trajo algunas colaboraciones como con el rapero IDK.
 
