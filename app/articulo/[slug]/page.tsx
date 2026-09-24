@@ -4,7 +4,6 @@ import Image from 'next/image'
 import type { Metadata } from 'next'
 import { ArrowLeft, Clock, Calendar } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
-import rehypeRaw from 'rehype-raw'
 import { articles, getArticle, getRecent } from '@/lib/articles'
 import { CategoryTag } from '@/components/category-tag'
 import { ArticleCard } from '@/components/article-card'
@@ -163,11 +162,10 @@ export default async function ArticlePage({
               }`}
             >
               <ReactMarkdown
-                rehypePlugins={[rehypeRaw]}
                 components={{
                   strong: ({ node, ...props }) => <strong className="font-bold text-punk-pink" {...props} />,
                   em: ({ node, ...props }) => <em className="italic text-punk-cream" {...props} />,
-                  p: ({ node, children, ...props }) => <p className="m-0 leading-relaxed" {...props}>{children}</p>,
+                  p: ({ node, children, ...props }) => <p className="m-0 leading-relaxed flex flex-wrap gap-4" {...props}>{children}</p>,
                   
                   // Renderizado automático de enlaces (YouTube, Spotify, Instagram o enlaces normales)
                   a: ({ node, href, children, ...props }) => {
@@ -188,14 +186,14 @@ export default async function ArticlePage({
                     )
                   },
 
-                  // Renderizado automático de imágenes inline dentro del texto
+                  // Renderizado automático de imágenes e imágenes continuas estilo mosaico
                   img: ({ node, src, alt, ...props }) => {
                     if (!src) return null
                     let finalSrc = src
                     if (finalSrc.startsWith('uploads/')) finalSrc = `/${finalSrc}`
 
                     return (
-                      <span className="my-8 block w-full">
+                      <span className="my-4 block flex-1 min-w-[250px]">
                         <span className="relative block aspect-[16/9] w-full overflow-hidden border-2 border-white/10">
                           <Image
                             src={finalSrc}
