@@ -28,8 +28,30 @@ export async function generateMetadata({
 
 // Helper para transformar enlaces de YouTube/Spotify/Instagram en embeds automáticos
 function renderEmbeddedMedia(href: string) {
+  const cleanHref = href.trim()
+
+  // Spotify embed (canciones, álbumes, playlists o episodios)
+  const spMatch = cleanHref.match(/(?:https?:\/\/)?(?:open\.)?spotify\.com\/(track|album|playlist|episode)\/([a-zA-Z0-9]+)/)
+  if (spMatch && spMatch[1] && spMatch[2]) {
+    return (
+      <span className="my-8 block w-full">
+        <span className="block overflow-hidden border-2 border-punk-pink">
+          <iframe
+            title="Reproductor de Spotify"
+            src={`https://open.spotify.com/embed/${spMatch[1]}/${spMatch[2]}`}
+            width="100%"
+            height={spMatch[1] === 'track' ? '152' : '352'}
+            loading="lazy"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            className="block border-0"
+          />
+        </span>
+      </span>
+    )
+  }
+
   // YouTube embed
-  const ytMatch = href.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
+  const ytMatch = cleanHref.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
   if (ytMatch && ytMatch[1]) {
     return (
       <span className="my-8 block w-full">
@@ -47,28 +69,8 @@ function renderEmbeddedMedia(href: string) {
     )
   }
 
-  // Spotify embed
-  const spMatch = href.match(/(?:https?:\/\/)?(?:open\.)?spotify\.com\/(track|album|playlist|episode)\/([a-zA-Z0-9]+)/)
-  if (spMatch && spMatch[1] && spMatch[2]) {
-    return (
-      <span className="my-8 block w-full">
-        <span className="block overflow-hidden border-2 border-punk-pink">
-          <iframe
-            title="Reproductor de Spotify"
-            src={`https://open.spotify.com/embed/${spMatch[1]}/${spMatch[2]}`}
-            width="100%"
-            height="352"
-            loading="lazy"
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            className="block border-0"
-          />
-        </span>
-      </span>
-    )
-  }
-
   // Instagram embed
-  const igMatch = href.match(/(?:https?:\/\/)?(?:www\.)?instagram\.com\/(?:p|reel)\/([a-zA-Z0-9_-]+)/)
+  const igMatch = cleanHref.match(/(?:https?:\/\/)?(?:www\.)?instagram\.com\/(?:p|reel)\/([a-zA-Z0-9_-]+)/)
   if (igMatch && igMatch[1]) {
     return (
       <span className="my-8 block w-full">
@@ -155,7 +157,7 @@ export default async function ArticlePage({
           {article.body.map((para, i) => {
             const trimmed = para.trim()
 
-            // Si el bloque es una URL directa de Youtube, Spotify o Instagram
+            // Si el bloque entero es una URL directa de Spotify, Youtube o Instagram
             const mediaEmbed = renderEmbeddedMedia(trimmed)
             if (mediaEmbed) {
               return <div key={i}>{mediaEmbed}</div>
