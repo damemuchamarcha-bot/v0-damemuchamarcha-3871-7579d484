@@ -25,6 +25,8 @@ La canción “4 Wheel Truck”, de Duckwrth, fue lanzada originalmente como una
 
 <https://youtu.be/V93ux4tOdKU?list=PLMZxYs1_turU>
 
+
+
 En un vídeo publicado en TikTok, Duckwrth anunció que este nuevo álbum funciona como una edición deluxe de su anterior proyecto, *All American Fuckboy*, e incluye varias canciones que no llegaron a formar parte de la versión original del disco.
 
 Canciones de desamor y con letras curiosas mantienen la energía del artista al cien por cien.
