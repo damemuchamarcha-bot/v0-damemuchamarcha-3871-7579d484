@@ -6,6 +6,9 @@ author: Marta Menjíbar
 section: musica
 categoryLabel: Análisis de álbumes
 image: https://1s4oyld5dc.ucarecd.net/3101cc2b-47fc-4005-94df-5da5d829a46d/-/crop/1000x429/0,0/-/preview/
+galeria:
+  - https://1s4oyld5dc.ucarecd.net/6091fb08-de03-498f-a360-5ca4483540f7/
+  - https://1s4oyld5dc.ucarecd.net/8137a0ad-73c9-4a89-918a-aa607e536fbc/
 ---
 El cantante estadounidense **Duckwrth** lanzó su nuevo disco *A.A.F.B - Sides* tras su último álbum en 2025, *All American F*ckBoy*, que trajo algunas colaboraciones como con el rapero IDK.
 
