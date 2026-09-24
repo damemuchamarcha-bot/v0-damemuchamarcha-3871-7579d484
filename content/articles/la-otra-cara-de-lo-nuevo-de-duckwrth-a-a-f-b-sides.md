@@ -35,7 +35,13 @@ Parte de la responsabilidad del mundo sonoro de este disco recae en los producto
 
 El sonido de Duckwrth ha evolucionado a algo más punk, rock-alt, indie y ha perdido un poco sus inicios con el rap. Aunque para nosotros es como si cogiéramos una máquina del tiempo al pasado y volviéramos a vivir un poco el disco de ***THE FALLING MAN* y *SuperGood***; son como si esos dos discos se hubieran fusionado con ***All American Fuckboy***, pero sin el elemento del rap.
 
-Visualmente, el artista tiene detalles hasta en la ropa que viste, siendo el que idea todo su imaginario y moda, apoderándose de la estrella como símbolo; lo podemos ver, por ejemplo, en el maquillaje
+Visualmente, el artista tiene detalles hasta en la ropa que viste, siendo el que idea todo su imaginario y moda, apoderándose de la estrella como símbolo; lo podemos ver, por ejemplo, en el maquillaje.
+
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 my-8">
+  <div class="overflow-hidden rounded-lg border-2 border-white/10 aspect-square"><img src="https://1s4oyld5dc.ucarecd.net/d0e157b5-4322-41b0-9568-cb2c79f733fa/" class="w-full h-full object-cover m-0" /></div>
+  <div class="overflow-hidden rounded-lg border-2 border-white/10 aspect-square"><img src="https://1s4oyld5dc.ucarecd.net/4c31635f-7d42-4d3c-b587-b8aeb8465b60/" class="w-full h-full object-cover m-0" /></div>
+  <div class="overflow-hidden rounded-lg border-2 border-white/10 aspect-square"><img src="https://1s4oyld5dc.ucarecd.net/6e18f0c5-81bd-47c2-8ce9-e9109bc1c707/" class="w-full h-full object-cover m-0" /></div>
+</div>
 
 Este disco ha tenido 3 videoclips. En “I Wanna Be Your Dog Again” aparece caracterizado como un perro y en “Sweet Fuego”, como canta en una casa en llamas.
 
