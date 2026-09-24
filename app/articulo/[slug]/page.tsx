@@ -4,6 +4,7 @@ import Image from 'next/image'
 import type { Metadata } from 'next'
 import { ArrowLeft, Clock, Calendar } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
+import rehypeRaw from 'rehype-raw'
 import { articles, getArticle, getRecent } from '@/lib/articles'
 import { CategoryTag } from '@/components/category-tag'
 import { ArticleCard } from '@/components/article-card'
@@ -26,21 +27,26 @@ export async function generateMetadata({
   }
 }
 
-// Helper para transformar enlaces de YouTube/Spotify/Instagram en embeds automáticos
+// Función robusta para detectar y transformar URLs de Spotify, YouTube e Instagram
 function renderEmbeddedMedia(href: string) {
+  if (!href) return null
   const cleanHref = href.trim()
 
-  // Spotify embed (canciones, álbumes, playlists o episodios)
-  const spMatch = cleanHref.match(/(?:https?:\/\/)?(?:open\.)?spotify\.com\/(track|album|playlist|episode)\/([a-zA-Z0-9]+)/)
+  // 1. Spotify Embed: Soporta URLs normales, con intl-es, track, album, playlist, episode, show
+  const spMatch = cleanHref.match(
+    (/(?:https?:\/\/)?(?:open\.)?spotify\.com\/(?:[a-zA-Z]{2}(?:-[a-zA-Z]{2})?\/)?(track|album|playlist|episode|show)\/([a-zA-Z0-9]+)/)
+  )
   if (spMatch && spMatch[1] && spMatch[2]) {
+    const type = spMatch[1]
+    const id = spMatch[2]
     return (
       <span className="my-8 block w-full">
-        <span className="block overflow-hidden border-2 border-punk-pink">
+        <span className="block overflow-hidden rounded-lg border-2 border-punk-pink shadow-lg">
           <iframe
             title="Reproductor de Spotify"
-            src={`https://open.spotify.com/embed/${spMatch[1]}/${spMatch[2]}`}
+            src={`https://open.spotify.com/embed/${type}/${id}?utm_source=generator`}
             width="100%"
-            height={spMatch[1] === 'track' ? '152' : '352'}
+            height={type === 'track' ? '152' : '352'}
             loading="lazy"
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             className="block border-0"
@@ -50,8 +56,10 @@ function renderEmbeddedMedia(href: string) {
     )
   }
 
-  // YouTube embed
-  const ytMatch = cleanHref.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
+  // 2. YouTube Embed
+  const ytMatch = cleanHref.match(
+    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+  )
   if (ytMatch && ytMatch[1]) {
     return (
       <span className="my-8 block w-full">
@@ -69,8 +77,10 @@ function renderEmbeddedMedia(href: string) {
     )
   }
 
-  // Instagram embed
-  const igMatch = cleanHref.match(/(?:https?:\/\/)?(?:www\.)?instagram\.com\/(?:p|reel)\/([a-zA-Z0-9_-]+)/)
+  // 3. Instagram Embed
+  const igMatch = cleanHref.match(
+    /(?:https?:\/\/)?(?:www\.)?instagram\.com\/(?:p|reel)\/([a-zA-Z0-9_-]+)/
+  )
   if (igMatch && igMatch[1]) {
     return (
       <span className="my-8 block w-full">
@@ -103,7 +113,7 @@ export default async function ArticlePage({
 
   return (
     <article>
-      {/* Header image de portada */}
+      {/* Header / Portada */}
       <div className="relative aspect-[16/10] w-full sm:aspect-[21/9]">
         <Image
           src={article.image || '/placeholder.svg'}
@@ -157,13 +167,24 @@ export default async function ArticlePage({
           {article.body.map((para, i) => {
             const trimmed = para.trim()
 
-            // Si el bloque entero es una URL directa de Spotify, Youtube o Instagram
+            // Comprobación previa si el párrafo completo es una URL limpia o iframe de Spotify/YouTube/Instagram
             const mediaEmbed = renderEmbeddedMedia(trimmed)
             if (mediaEmbed) {
               return <div key={i}>{mediaEmbed}</div>
             }
 
-            // Si es un bloque HTML (p. ej. las galerías subidas desde el editor)
+            // Si incluye una etiqueta iframe directa
+            if (trimmed.includes('<iframe') && trimmed.includes('spotify.com')) {
+              return (
+                <div
+                  key={i}
+                  className="my-4 text-pretty text-lg leading-[1.8] text-punk-cream/85"
+                  dangerouslySetInnerHTML={{ __html: trimmed }}
+                />
+              )
+            }
+
+            // Si es HTML genérico
             const isHTML = trimmed.startsWith('<') && trimmed.endsWith('>')
             if (isHTML) {
               return (
@@ -175,7 +196,7 @@ export default async function ArticlePage({
               )
             }
 
-            // Texto Markdown estándar
+            // Renderizado Markdown
             return (
               <div
                 key={i}
@@ -186,12 +207,21 @@ export default async function ArticlePage({
                 }`}
               >
                 <ReactMarkdown
+                  rehypePlugins={[rehypeRaw]}
                   components={{
-                    strong: ({ node, ...props }) => <strong className="font-bold text-punk-pink" {...props} />,
-                    em: ({ node, ...props }) => <em className="italic text-punk-cream" {...props} />,
-                    p: ({ node, children, ...props }) => <p className="m-0 inline" {...props}>{children}</p>,
+                    strong: ({ node, ...props }) => (
+                      <strong className="font-bold text-punk-pink" {...props} />
+                    ),
+                    em: ({ node, ...props }) => (
+                      <em className="italic text-punk-cream" {...props} />
+                    ),
+                    p: ({ node, children, ...props }) => (
+                      <p className="m-0 inline" {...props}>
+                        {children}
+                      </p>
+                    ),
                     
-                    // Renderizado automático de enlaces Markdown
+                    // Transformación de enlaces de Spotify dentro de Markdown
                     a: ({ node, href, children, ...props }) => {
                       if (href) {
                         const embed = renderEmbeddedMedia(href)
@@ -202,7 +232,7 @@ export default async function ArticlePage({
                           href={href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-punk-yellow underline hover:text-punk-pink transition-colors"
+                          className="text-punk-yellow underline transition-colors hover:text-punk-pink"
                           {...props}
                         >
                           {children}
@@ -210,7 +240,7 @@ export default async function ArticlePage({
                       )
                     },
 
-                    // Renderizado de imágenes Markdown
+                    // Renderizado de imágenes
                     img: ({ node, src, alt, ...props }) => {
                       if (!src) return null
                       let finalSrc = src
@@ -225,7 +255,10 @@ export default async function ArticlePage({
                               fill
                               sizes="(max-width: 768px) 100vw, 768px"
                               className="object-cover"
-                              unoptimized={finalSrc.startsWith('/uploads') || finalSrc.startsWith('uploads/')}
+                              unoptimized={
+                                finalSrc.startsWith('/uploads') ||
+                                finalSrc.startsWith('uploads/')
+                              }
                             />
                           </span>
                           {alt && (
@@ -245,9 +278,9 @@ export default async function ArticlePage({
           })}
         </div>
 
-        {/* Galería adicional opcional de la cabecera */}
+        {/* Galería adicional opcional */}
         {article.gallery && article.gallery.length > 0 && (
-          <div className="mt-12 mb-4">
+          <div className="mb-4 mt-12">
             <h2 className="mb-4 font-display text-2xl uppercase tracking-tight text-punk-cream">
               Galería <span className="text-punk-yellow">/</span> Fotos
             </h2>
@@ -263,7 +296,9 @@ export default async function ArticlePage({
                     fill
                     sizes="(max-width: 640px) 100vw, 50vw"
                     className="object-cover transition-transform duration-500 hover:scale-105"
-                    unoptimized={src.startsWith('/uploads') || src.startsWith('uploads/')}
+                    unoptimized={
+                      src.startsWith('/uploads') || src.startsWith('uploads/')
+                    }
                   />
                 </div>
               ))}
@@ -272,7 +307,7 @@ export default async function ArticlePage({
         )}
       </div>
 
-      {/* Relacionados */}
+      {/* Artículos relacionados */}
       <section className="mx-auto mt-16 max-w-7xl px-4 py-14 sm:px-6">
         <div className="mb-8 border-b-2 border-punk-pink pb-4">
           <h2 className="font-display text-3xl uppercase leading-none tracking-tight text-punk-cream sm:text-4xl">
