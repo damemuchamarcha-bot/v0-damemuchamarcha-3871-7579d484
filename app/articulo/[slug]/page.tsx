@@ -4,7 +4,6 @@ import Image from 'next/image'
 import type { Metadata } from 'next'
 import { ArrowLeft, Clock, Calendar } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
-import rehypeRaw from 'rehype-raw'
 import { articles, getArticle, getRecent } from '@/lib/articles'
 import { CategoryTag } from '@/components/category-tag'
 import { ArticleCard } from '@/components/article-card'
@@ -27,14 +26,14 @@ export async function generateMetadata({
   }
 }
 
-// Función robusta para detectar y transformar URLs de Spotify, YouTube e Instagram
+// Transformador de URLs (Spotify, YouTube, Instagram)
 function renderEmbeddedMedia(href: string) {
   if (!href) return null
   const cleanHref = href.trim()
 
-  // 1. Spotify Embed: Soporta URLs normales, con intl-es, track, album, playlist, episode, show
+  // Spotify Embed (track, album, playlist, episode, show, intl-xx)
   const spMatch = cleanHref.match(
-    (/(?:https?:\/\/)?(?:open\.)?spotify\.com\/(?:[a-zA-Z]{2}(?:-[a-zA-Z]{2})?\/)?(track|album|playlist|episode|show)\/([a-zA-Z0-9]+)/)
+    /(?:https?:\/\/)?(?:open\.)?spotify\.com\/(?:[a-zA-Z]{2}(?:-[a-zA-Z]{2})?\/)?(track|album|playlist|episode|show)\/([a-zA-Z0-9]+)/
   )
   if (spMatch && spMatch[1] && spMatch[2]) {
     const type = spMatch[1]
@@ -56,7 +55,7 @@ function renderEmbeddedMedia(href: string) {
     )
   }
 
-  // 2. YouTube Embed
+  // YouTube Embed
   const ytMatch = cleanHref.match(
     /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
   )
@@ -77,7 +76,7 @@ function renderEmbeddedMedia(href: string) {
     )
   }
 
-  // 3. Instagram Embed
+  // Instagram Embed
   const igMatch = cleanHref.match(
     /(?:https?:\/\/)?(?:www\.)?instagram\.com\/(?:p|reel)\/([a-zA-Z0-9_-]+)/
   )
@@ -113,7 +112,7 @@ export default async function ArticlePage({
 
   return (
     <article>
-      {/* Header / Portada */}
+      {/* Portada */}
       <div className="relative aspect-[16/10] w-full sm:aspect-[21/9]">
         <Image
           src={article.image || '/placeholder.svg'}
@@ -167,26 +166,15 @@ export default async function ArticlePage({
           {article.body.map((para, i) => {
             const trimmed = para.trim()
 
-            // Comprobación previa si el párrafo completo es una URL limpia o iframe de Spotify/YouTube/Instagram
+            // 1. Si el texto del párrafo contiene o es una URL directa de Spotify, YouTube o Instagram
             const mediaEmbed = renderEmbeddedMedia(trimmed)
             if (mediaEmbed) {
               return <div key={i}>{mediaEmbed}</div>
             }
 
-            // Si incluye una etiqueta iframe directa
-            if (trimmed.includes('<iframe') && trimmed.includes('spotify.com')) {
-              return (
-                <div
-                  key={i}
-                  className="my-4 text-pretty text-lg leading-[1.8] text-punk-cream/85"
-                  dangerouslySetInnerHTML={{ __html: trimmed }}
-                />
-              )
-            }
-
-            // Si es HTML genérico
+            // 2. Si trae un iframe directo o bloques HTML del editor (galerías, etc)
             const isHTML = trimmed.startsWith('<') && trimmed.endsWith('>')
-            if (isHTML) {
+            if (isHTML || trimmed.includes('<iframe')) {
               return (
                 <div
                   key={i}
@@ -196,7 +184,7 @@ export default async function ArticlePage({
               )
             }
 
-            // Renderizado Markdown
+            // 3. Formato Markdown normal
             return (
               <div
                 key={i}
@@ -207,7 +195,6 @@ export default async function ArticlePage({
                 }`}
               >
                 <ReactMarkdown
-                  rehypePlugins={[rehypeRaw]}
                   components={{
                     strong: ({ node, ...props }) => (
                       <strong className="font-bold text-punk-pink" {...props} />
@@ -220,8 +207,6 @@ export default async function ArticlePage({
                         {children}
                       </p>
                     ),
-                    
-                    // Transformación de enlaces de Spotify dentro de Markdown
                     a: ({ node, href, children, ...props }) => {
                       if (href) {
                         const embed = renderEmbeddedMedia(href)
@@ -239,8 +224,6 @@ export default async function ArticlePage({
                         </a>
                       )
                     },
-
-                    // Renderizado de imágenes
                     img: ({ node, src, alt, ...props }) => {
                       if (!src) return null
                       let finalSrc = src
@@ -307,7 +290,7 @@ export default async function ArticlePage({
         )}
       </div>
 
-      {/* Artículos relacionados */}
+      {/* Relacionados */}
       <section className="mx-auto mt-16 max-w-7xl px-4 py-14 sm:px-6">
         <div className="mb-8 border-b-2 border-punk-pink pb-4">
           <h2 className="font-display text-3xl uppercase leading-none tracking-tight text-punk-cream sm:text-4xl">
