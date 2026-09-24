@@ -39,10 +39,10 @@ Este disco ha tenido 3 videoclips. En “I Wanna Be Your Dog Again” aparece ca
 
 Duckwrth ha decidido hacernos descubrir el otro lado de la cinta y darnos otra versión de un disco. Ocho canciones después, el álbum sigue explorando distintas atmósferas y subgéneros con total libertad.
 
-Queremos destacar la nominación en la 67.ª edición de los Premios Grammy en la categoría de Best Immersive Audio Album por su aclamado proyecto conceptual *All American F—Boy*. Aunque el trofeo y el reconocimiento técnico de esta categoría corresponden directamente al ingeniero de mezcla inmersiva Andrew Law por adaptar las pistas originales al formato Dolby Atmos, Duckwrth celebró este logro como una auténtica manifestación, ya que durante las sesiones de grabación en el estudio solía bromear con sus amigos tocando un "botón invisible de los Grammy" cada vez que finalizaban una canción.
-
 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 my-8">
-  <div class="overflow-hidden rounded-lg border-2 border-white/10 aspect-square"><img src="https://1s4oyld5dc.ucarecd.net/a22678f6-466f-4b6c-b63e-677f0464a617/" class="w-full h-full object-cover m-0" /></div>
-  <div class="overflow-hidden rounded-lg border-2 border-white/10 aspect-square"><img src="https://1s4oyld5dc.ucarecd.net/f3416786-49fd-492b-bd89-58803b803652/" class="w-full h-full object-cover m-0" /></div>
-  <div class="overflow-hidden rounded-lg border-2 border-white/10 aspect-square"><img src="https://1s4oyld5dc.ucarecd.net/b4e59ac7-c78c-4c5b-825a-07ee9014ca30/" class="w-full h-full object-cover m-0" /></div>
+  <div class="overflow-hidden rounded-lg border-2 border-white/10 aspect-square"><img src="https://1s4oyld5dc.ucarecd.net/c020cbb3-59f2-42e8-ba20-0f8cbcd36dd4/-/crop/660x661/90,137/-/preview/" class="w-full h-full object-cover m-0" /></div>
+  <div class="overflow-hidden rounded-lg border-2 border-white/10 aspect-square"><img src="https://1s4oyld5dc.ucarecd.net/cccf6afa-f731-45cc-84a2-18c50e1c48ad/-/crop/149x149/73,8/-/preview/" class="w-full h-full object-cover m-0" /></div>
+  <div class="overflow-hidden rounded-lg border-2 border-white/10 aspect-square"><img src="https://1s4oyld5dc.ucarecd.net/290f400b-1fd8-413e-94c4-a5b4ba8c11df/-/crop/578x579/128,1/-/preview/" class="w-full h-full object-cover m-0" /></div>
 </div>
+
+Queremos destacar la nominación en la 67.ª edición de los Premios Grammy en la categoría de Best Immersive Audio Album por su aclamado proyecto conceptual *All American F—Boy*. Aunque el trofeo y el reconocimiento técnico de esta categoría corresponden directamente al ingeniero de mezcla inmersiva Andrew Law por adaptar las pistas originales al formato Dolby Atmos, Duckwrth celebró este logro como una auténtica manifestación, ya que durante las sesiones de grabación en el estudio solía bromear con sus amigos tocando un "botón invisible de los Grammy" cada vez que finalizaban una canción.
